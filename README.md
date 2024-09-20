@@ -15,7 +15,7 @@
 
 [Жиленков Илья](https://github.com/ilyushkaaa) - _Backend_
 
-[Памужак Пётр](https://github.com/) - UX
+[Памужак Пётр](https://github.com/mars444) - UX
 
 
 ## Ссылки
