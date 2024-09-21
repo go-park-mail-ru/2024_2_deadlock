@@ -11,7 +11,7 @@
 
 ## Менторы
 
-[Киричов Владислав](https://github.com/) - _Frontend_
+[Кирпичов Владислав](https://github.com/) - _Frontend_
 
 [Жиленков Илья](https://github.com/ilyushkaaa) - _Backend_
 
