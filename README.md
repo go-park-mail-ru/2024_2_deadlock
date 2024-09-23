@@ -3,9 +3,9 @@
 
 ## Авторы
 
-[Юрий Малхасян](https://github.com/ujognutsi) 
+[Иван Павлов](https://github.com/darleet) - _Тимлид_
 
-[Иван Павлов](https://github.com/darleet) 
+[Юрий Малхасян](https://github.com/ujognutsi) 
 
 [Александр Новиков](https://github.com/AlexNov03)
 
@@ -15,7 +15,7 @@
 
 [Жиленков Илья](https://github.com/ilyushkaaa) - _Backend_
 
-[Памужак Пётр](https://github.com/mars444) - UX
+[Памужак Пётр](https://github.com/mars444) - _UX/UI_
 
 
 ## Ссылки
