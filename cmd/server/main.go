@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/go-park-mail-ru/2024_2_deadlock/internal/cmd"
 	"os"
+
+	"github.com/go-park-mail-ru/2024_2_deadlock/internal/cmd"
 )
 
 func main() {
