@@ -19,3 +19,6 @@ bin/
 
 # Go workspace file
 go.work
+
+### Configs
+*.env
