@@ -1,9 +1,20 @@
+NAME := server
+MAIN := cmd/server/main.go
 PKG := `go list -mod=mod -f {{.Dir}} ./...`
 
+all: build
 init: mod-tidy install-gci install-lint
+
+.PHONY: build
+build:
+	@mkdir -p bin
+	@go build -mod=mod -o bin/$(NAME) $(MAIN)
 
 mod-tidy:
 	go mod tidy
+
+mod-download:
+	go mod download all
 
 install-gci:
 	go install github.com/daixiang0/gci@latest
