@@ -1,9 +1,10 @@
 package cmd
 
 import (
-	"github.com/go-park-mail-ru/2024_2_deadlock/internal/depgraph"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
+	"github.com/go-park-mail-ru/2024_2_deadlock/internal/depgraph"
 )
 
 type RunArgs struct {
