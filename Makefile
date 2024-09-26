@@ -5,6 +5,10 @@ PKG := `go list -mod=mod -f {{.Dir}} ./...`
 all: build
 init: mod-tidy install-gci install-lint
 
+run: lint build
+	@echo "Starting app..."
+	./bin/$(NAME)
+
 .PHONY: build
 build:
 	@mkdir -p bin
