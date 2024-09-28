@@ -4,6 +4,7 @@ go 1.22.0
 
 require (
 	github.com/daixiang0/gci v0.13.5
+	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/viper v1.19.0
 	go.uber.org/zap v1.24.0

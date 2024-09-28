@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -27,7 +28,7 @@ func InitRunCommand() (*cobra.Command, error) {
 			dg := depgraph.NewDepGraph()
 			logger, err := dg.GetLogger()
 			if err != nil {
-				return err
+				return errors.Wrap(err, "get logger")
 			}
 
 			viper.SetConfigFile(args.EnvPath)
@@ -41,7 +42,7 @@ func InitRunCommand() (*cobra.Command, error) {
 				logger.Debug("Using config file")
 				err = viper.Unmarshal(&config)
 				if err != nil {
-					return err
+					return errors.Wrap(err, "unmarshal config")
 				}
 			}
 
