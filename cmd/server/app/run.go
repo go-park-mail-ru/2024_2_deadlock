@@ -25,13 +25,16 @@ func InitRunCommand() (*cobra.Command, error) {
 		Short: "Starts server",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			dg := depgraph.NewDepGraph()
-			logger, _ := dg.GetLogger()
+			logger, err := dg.GetLogger()
+			if err != nil {
+				return err
+			}
 
 			viper.SetConfigFile(args.EnvPath)
 
 			var config Config
 
-			err := viper.ReadInConfig()
+			err = viper.ReadInConfig()
 			if err != nil {
 				logger.Warn("Config file Not Found. Using cli arguments")
 			} else {
