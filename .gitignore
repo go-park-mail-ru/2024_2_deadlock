@@ -22,3 +22,5 @@ go.work
 
 ### Configs
 *.env
+dev.yaml
+prod.yaml

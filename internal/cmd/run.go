@@ -10,8 +10,8 @@ import (
 const (
 	cmdConfigName      = "config"
 	cmdConfigShorthand = "c"
-	cmdConfigValue     = ".env"
-	cmdConfigUsage     = ".env file path"
+	cmdConfigValue     = "dev.yaml"
+	cmdConfigUsage     = ".yaml file path"
 )
 
 type RunArgs struct {

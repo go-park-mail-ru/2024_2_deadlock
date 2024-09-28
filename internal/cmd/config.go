@@ -1,5 +1,9 @@
 package cmd
 
+type Database struct {
+	URL string `mapstructure:"url"`
+}
+
 type Config struct {
-	DatabaseURL string `mapstructure:"DATABASE_URL"`
+	Database Database `mapstructure:"database"`
 }
