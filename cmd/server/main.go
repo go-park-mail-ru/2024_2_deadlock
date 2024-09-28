@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/go-park-mail-ru/2024_2_deadlock/internal/cmd"
+	"github.com/go-park-mail-ru/2024_2_deadlock/cmd/server/app"
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/depgraph"
 )
 
@@ -19,7 +19,7 @@ func main() {
 
 	logger.Info("Starting server...")
 
-	rootCmd, err := cmd.InitRunCommand()
+	rootCmd, err := app.InitRunCommand()
 	if err != nil {
 		fmt.Printf("init run command: %v", err)
 		os.Exit(1)

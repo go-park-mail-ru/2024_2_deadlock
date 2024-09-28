@@ -1,4 +1,4 @@
-package cmd
+package app
 
 type Database struct {
 	URL string `mapstructure:"url"`
