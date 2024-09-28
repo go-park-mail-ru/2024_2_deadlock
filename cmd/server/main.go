@@ -21,12 +21,12 @@ func main() {
 
 	rootCmd, err := cmd.InitRunCommand()
 	if err != nil {
-		fmt.Println("init run command: %w", err)
+		fmt.Printf("init run command: %v", err)
 		os.Exit(1)
 	}
 
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println("execute: %w", err)
+		fmt.Printf("execute: %v", err)
 		os.Exit(1)
 	}
 }
