@@ -7,6 +7,13 @@ import (
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/depgraph"
 )
 
+const (
+	cmdConfigName      = "config"
+	cmdConfigShorthand = "c"
+	cmdConfigValue     = ".env"
+	cmdConfigUsage     = ".env file path"
+)
+
 type RunArgs struct {
 	EnvPath string
 }
@@ -44,7 +51,7 @@ func InitRunCommand() (*cobra.Command, error) {
 		},
 	}
 
-	cmd.Flags().StringVarP(&args.EnvPath, "config", "c", ".env", ".env file path")
+	cmd.Flags().StringVarP(&args.EnvPath, cmdConfigName, cmdConfigShorthand, cmdConfigValue, cmdConfigUsage)
 
 	return cmd, nil
 }
