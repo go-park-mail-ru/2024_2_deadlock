@@ -3,7 +3,7 @@ MAIN := cmd/server/main.go
 PKG := `go list -mod=mod -f {{.Dir}} ./...`
 
 all: build
-init: mod-tidy install-gci install-lint
+init: mod-tidy install-gci install-lint install-goose
 
 run: lint build
 	@echo "Starting app..."
@@ -25,6 +25,9 @@ install-gci:
 
 install-lint:
 	curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin latest
+
+install-goose:
+	go install github.com/pressly/goose/v3/cmd/goose@latest
 
 pre-commit: lint test
 
