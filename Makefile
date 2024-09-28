@@ -33,7 +33,7 @@ fmt:
 	gci write -s standard -s default -s "Prefix(github.com/go-park-mail-ru/2024_2_deadlock)" -s blank -s dot $(PKG)
 
 lint: fmt
-	golangci-lint run
+	golangci-lint run -E wsl -E bodyclose -E errname
 
 .PHONY: test
 test:
