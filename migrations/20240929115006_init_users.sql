@@ -2,7 +2,7 @@
 -- +goose StatementBegin
 CREATE SCHEMA IF NOT EXISTS auth;
 
-CREATE TABLE IF NOT EXISTS auth.users (
+CREATE TABLE IF NOT EXISTS auth.user (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     email TEXT
         UNIQUE
@@ -16,6 +16,6 @@ CREATE TABLE IF NOT EXISTS auth.users (
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE IF EXISTS auth.users;
+DROP TABLE IF EXISTS auth.user;
 DROP SCHEMA IF EXISTS auth;
 -- +goose StatementEnd
