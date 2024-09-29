@@ -6,6 +6,7 @@
 Для запуска проекта:
 
 ```shell
+make migrate
 make run
 ```
 

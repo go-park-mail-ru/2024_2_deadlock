@@ -1,18 +1,38 @@
 NAME := server
 MAIN := cmd/server/main.go
+
+NAME_MIGRATE := migrate
+MAIN_MIGRATE := cmd/migrate/main.go
+
 PKG := `go list -mod=mod -f {{.Dir}} ./...`
 
+RUNFLAGS := --config dev.yaml
+
 all: build
-init: mod-tidy install-gci install-lint install-goose
+init: mod-tidy install-gci install-lint
 
 run: lint build
 	@echo "Starting app..."
-	./bin/$(NAME)
+	./bin/$(NAME) $(RUNFLAGS) run
+
+create-migration: build-migrate
+	./bin/${NAME_MIGRATE} $(RUNFLAGS) create $(name)
+
+migrate: build-migrate
+	./bin/${NAME_MIGRATE} $(RUNFLAGS) up
+
+downgrade: build-migrate
+	./bin/${NAME_MIGRATE} $(RUNFLAGS) down
 
 .PHONY: build
 build:
 	@mkdir -p bin
 	@go build -mod=mod -o bin/$(NAME) $(MAIN)
+
+.PHONY: build-migrate
+build-migrate:
+	@mkdir -p bin
+	@go build -mod=mod -o bin/$(NAME_MIGRATE) $(MAIN_MIGRATE)
 
 mod-tidy:
 	go mod tidy
@@ -25,9 +45,6 @@ install-gci:
 
 install-lint:
 	curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin latest
-
-install-goose:
-	go install github.com/pressly/goose/v3/cmd/goose@latest
 
 pre-commit: lint test
 
