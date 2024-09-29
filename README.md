@@ -1,19 +1,23 @@
 # 2024_2_deadlock
 Репозиторий Бэкэнда проекта vc.ru команды deadlock
 
-## Начало работы
+## Запуск проекта
 
-Для запуска проекта:
-
-```shell
-make migrate
-make run
-```
-
-Для установки зависимостей:
+Установите зависимости:
 
 ```shell
 make init
+```
+
+Примените миграции:
+
+```shell
+make migrate
+```
+
+Запустите сервер:
+```shell
+make run
 ```
 
 ## Перед пушем в репозиторий 
@@ -29,6 +33,20 @@ make pre-commit
 ```shell
 make lint
 make test
+```
+
+## Работа с миграциями
+
+Создание новой миграции:
+
+```shell
+make create_migration name="some_name"
+```
+
+Применение миграций:
+
+```shell
+make migrate
 ```
 
 ## Авторы
