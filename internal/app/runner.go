@@ -7,6 +7,7 @@ import (
 	"syscall"
 
 	"github.com/pkg/errors"
+	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/depgraph"
@@ -29,6 +30,10 @@ func Run(ctx context.Context, e Entrypoint) error {
 		return errors.Wrap(err, "get logger")
 	}
 
+	if err := e.Init(ctx); err != nil {
+		logger.Errorw("entrypoint init error", zap.Error(err))
+	}
+
 	eg, ctx := errgroup.WithContext(ctx)
 
 	eg.Go(func() error {
@@ -46,6 +51,7 @@ func Run(ctx context.Context, e Entrypoint) error {
 
 	if err := eg.Wait(); err != nil {
 		logger.Infof("app was shut down, reason: %s", err)
+		logger.Errorw("entrypoint init error", zap.Error(err))
 	}
 
 	return nil
