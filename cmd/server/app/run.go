@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/go-park-mail-ru/2024_2_deadlock/internal/bootstrap"
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/depgraph"
 )
 
@@ -33,14 +34,14 @@ func InitRunCommand() (*cobra.Command, error) {
 
 			viper.SetConfigFile(args.EnvPath)
 
-			var config Config
+			var cfg bootstrap.Config
 
 			err = viper.ReadInConfig()
 			if err != nil {
 				logger.Warn("Config file Not Found. Using cli arguments")
 			} else {
 				logger.Debug("Using config file")
-				err = viper.Unmarshal(&config)
+				err = viper.Unmarshal(&cfg)
 				if err != nil {
 					return errors.Wrap(err, "unmarshal config")
 				}
