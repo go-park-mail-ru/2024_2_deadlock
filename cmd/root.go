@@ -35,7 +35,7 @@ func Init(name string) *RootCommand {
 	}
 	cobra.OnInitialize(cmd.setup)
 
-	cmd.Flags().StringVarP(
+	cmd.PersistentFlags().StringVarP(
 		&cmd.Options.ConfigPath,
 		cmdConfigName,
 		cmdConfigShorthand,
