@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
@@ -18,21 +19,25 @@ type Server struct {
 	cfg  *bootstrap.Config
 	log  *zap.SugaredLogger
 	http *http.Server
+	mux  *mux.Router
 	uc   UseCases
 }
 
 func NewServer(cfg *bootstrap.Config, log *zap.SugaredLogger, uc UseCases) *Server {
-	return &Server{
+	s := &Server{
 		cfg: cfg,
 		log: log,
 		uc:  uc,
 	}
+	s.makeRoutes()
+
+	return s
 }
 
 func (s *Server) Run() error {
 	s.http = &http.Server{
 		Addr:    fmt.Sprintf("0.0.0.0:%d", s.cfg.Server.Port),
-		Handler: http.DefaultServeMux,
+		Handler: s.mux,
 	}
 
 	if err := s.http.ListenAndServe(); errors.Is(err, http.ErrServerClosed) {
