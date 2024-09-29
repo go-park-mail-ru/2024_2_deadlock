@@ -13,8 +13,8 @@ type RunArgs struct {
 
 func init() {
 	rootCmd.AddCommand(&cobra.Command{
-		Use:   "run",
-		Short: "Starts server",
+		Use:   "api",
+		Short: "Starts API server",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			dg := depgraph.NewDepGraph()
 			logger, err := dg.GetLogger()

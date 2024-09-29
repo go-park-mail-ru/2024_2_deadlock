@@ -13,7 +13,7 @@ init: mod-tidy install-swag install-gci install-lint
 
 run: lint build
 	@echo "Starting app..."
-	./bin/$(NAME) $(RUNFLAGS) run
+	./bin/$(NAME) $(RUNFLAGS) api
 
 create-migration: build-migrate
 	./bin/${NAME_MIGRATE} $(RUNFLAGS) create $(name)
