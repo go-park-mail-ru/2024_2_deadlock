@@ -12,7 +12,7 @@ import (
 )
 
 type UseCases struct {
-	// TODO: add use cases
+	Auth AuthUC
 }
 
 type Server struct {
