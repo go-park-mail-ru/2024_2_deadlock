@@ -32,12 +32,15 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sessionID, err := s.uc.Auth.Login(r.Context(), *input)
-	if err != nil && errors.Is(err, resterr.ErrNotFound) {
+
+	if errors.Is(err, resterr.ErrNotFound) {
 		s.log.Errorw("could not login", zap.Error(err))
 		s.SendError(w, resterr.NewNotFoundError("user not found"))
 
 		return
-	} else if err != nil {
+	}
+
+	if err != nil {
 		s.ProcessInternalServerError(w, err)
 		return
 	}
@@ -95,12 +98,15 @@ func (s *Server) Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sessionID, err := s.uc.Auth.Register(r.Context(), *input)
-	if err != nil && errors.Is(err, resterr.ErrConflict) {
+
+	if errors.Is(err, resterr.ErrConflict) {
 		s.log.Errorw("could not register", zap.Error(err))
 		s.SendError(w, resterr.NewConflictError("user already exists"))
 
 		return
-	} else if err != nil {
+	}
+
+	if err != nil {
 		s.ProcessInternalServerError(w, err)
 		return
 	}
