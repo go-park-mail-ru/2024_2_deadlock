@@ -4,13 +4,8 @@ CREATE SCHEMA IF NOT EXISTS auth;
 
 CREATE TABLE IF NOT EXISTS auth.user (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    email TEXT
-        UNIQUE
-        CONSTRAINT email_length CHECK ( CHAR_LENGTH(email) <= 255 )
-        NOT NULL,
-    password TEXT
-        CONSTRAINT password_length CHECK ( CHAR_LENGTH(password) <= 255 )
-        NOT NULL
+    email TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL
 );
 -- +goose StatementEnd
 
