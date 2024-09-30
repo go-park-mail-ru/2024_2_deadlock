@@ -1,4 +1,4 @@
-package utils
+package validator
 
 import (
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/depgraph"
