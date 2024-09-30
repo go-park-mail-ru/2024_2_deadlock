@@ -13,6 +13,7 @@ import (
 
 type UseCases struct {
 	Auth AuthUC
+	User UserUC
 }
 
 type Server struct {

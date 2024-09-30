@@ -22,7 +22,3 @@ func (uc *Usecase) Logout(ctx context.Context, sessionID domain.SessionID) error
 func (uc *Usecase) Register(ctx context.Context, user domain.UserInput) (domain.SessionID, error) {
 	panic("implement me")
 }
-
-func (uc *Usecase) CurrentUser(ctx context.Context, sessionID domain.SessionID) (domain.User, error) {
-	panic("implement me")
-}
