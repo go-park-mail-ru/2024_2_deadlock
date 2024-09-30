@@ -3,8 +3,8 @@ package domain
 type UserID int
 
 type UserInput struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required,regexp=/^[a-zA-Z0-9?!_\\-*$]{6,255}$/"`
 }
 
 type User struct {
