@@ -16,6 +16,7 @@ type AuthUC interface {
 	Login(ctx context.Context, user domain.UserInput) (domain.SessionID, error)
 	Logout(ctx context.Context, sessionID domain.SessionID) error
 	Register(ctx context.Context, user domain.UserInput) (domain.SessionID, error)
+	GetUserID(ctx context.Context, sessionID domain.SessionID) (domain.UserID, error)
 }
 
 func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
