@@ -1,9 +1,26 @@
 package bootstrap
 
-import "github.com/spf13/viper"
+import (
+	"time"
+
+	"github.com/spf13/viper"
+)
+
+type Cookie struct {
+	Name     string        `mapstructure:"name"`
+	Path     string        `mapstructure:"path"`
+	MaxAge   time.Duration `mapstructure:"max_age"`
+	HttpOnly bool          `mapstructure:"http_only"`
+	Secure   bool          `mapstructure:"secure"`
+}
+
+type Session struct {
+	Cookie Cookie `mapstructure:"cookie"`
+}
 
 type Server struct {
-	Port int `mapstructure:"port"`
+	Port    int     `mapstructure:"port"`
+	Session Session `mapstructure:"session"`
 }
 
 type Database struct {

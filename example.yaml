@@ -1,4 +1,11 @@
 server:
   port: 8000
+  session:
+    cookie:
+      name: session_id
+      path: /
+      max_age: 12h
+      http_only: true
+      secure: false
 database:
   url: postgresql://postgres:postgres@localhost:5432/postgres?sslmode=disable
