@@ -3,7 +3,6 @@ package http
 import (
 	"context"
 	"net/http"
-	"time"
 
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
@@ -45,13 +44,14 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	cfg := s.cfg.Server.Session.Cookie
 	cookie := &http.Cookie{
-		Name:     "session_id",
+		Name:     cfg.Name,
 		Value:    string(sessionID),
-		Path:     "/",
-		Expires:  time.Now().Add(12 * time.Hour),
-		HttpOnly: true,
-		Secure:   false, // TODO: add https
+		Path:     cfg.Path,
+		MaxAge:   int(cfg.MaxAge.Seconds()),
+		HttpOnly: cfg.HttpOnly,
+		Secure:   cfg.Secure,
 	}
 
 	http.SetCookie(w, cookie)
@@ -74,13 +74,14 @@ func (s *Server) Logout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	cfg := s.cfg.Server.Session.Cookie
 	cookie = &http.Cookie{
-		Name:     "session_id",
+		Name:     cfg.Name,
 		Value:    "",
-		Path:     "/",
-		Expires:  time.Now().Add(-1 * time.Hour),
-		HttpOnly: true,
-		Secure:   false, // TODO: add https
+		Path:     cfg.Path,
+		MaxAge:   0,
+		HttpOnly: cfg.HttpOnly,
+		Secure:   cfg.Secure,
 	}
 
 	http.SetCookie(w, cookie)
@@ -111,13 +112,14 @@ func (s *Server) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	cfg := s.cfg.Server.Session.Cookie
 	cookie := &http.Cookie{
-		Name:     "session_id",
+		Name:     cfg.Name,
 		Value:    string(sessionID),
-		Path:     "/",
-		Expires:  time.Now().Add(12 * time.Hour),
-		HttpOnly: true,
-		Secure:   false, // TODO: add https
+		Path:     cfg.Path,
+		MaxAge:   int(cfg.MaxAge.Seconds()),
+		HttpOnly: cfg.HttpOnly,
+		Secure:   cfg.Secure,
 	}
 
 	http.SetCookie(w, cookie)
@@ -126,7 +128,7 @@ func (s *Server) Register(w http.ResponseWriter, r *http.Request) {
 func (s *Server) CurrentUser(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
-	sessionID, err := r.Cookie("session_id")
+	sessionID, err := r.Cookie(s.cfg.Server.Session.Cookie.Name)
 	if err != nil {
 		s.log.Errorw("could not get session id from cookies", zap.Error(err))
 		s.SendError(w, resterr.NewUnauthorizedError(err))
