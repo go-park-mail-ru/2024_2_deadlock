@@ -16,7 +16,6 @@ type AuthUC interface {
 	Login(ctx context.Context, user domain.UserInput) (domain.SessionID, error)
 	Logout(ctx context.Context, sessionID domain.SessionID) error
 	Register(ctx context.Context, user domain.UserInput) (domain.SessionID, error)
-	CurrentUser(ctx context.Context, sessionID domain.SessionID) (domain.User, error)
 }
 
 func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
@@ -123,32 +122,4 @@ func (s *Server) Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.SetCookie(w, cookie)
-}
-
-func (s *Server) CurrentUser(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-
-	sessionID, err := r.Cookie(s.cfg.Server.Session.Cookie.Name)
-	if err != nil {
-		s.log.Errorw("could not get session id from cookies", zap.Error(err))
-		utils.SendError(s.log, w, resterr.NewUnauthorizedError(err))
-
-		return
-	}
-
-	user, err := s.uc.Auth.CurrentUser(r.Context(), domain.SessionID(sessionID.Value))
-
-	if errors.Is(err, resterr.ErrNotFound) {
-		s.log.Errorw("could not get current user", zap.Error(err))
-		utils.SendError(s.log, w, resterr.NewNotFoundError("user not found"))
-
-		return
-	}
-
-	if err != nil {
-		utils.ProcessInternalServerError(s.log, w, err)
-		return
-	}
-
-	utils.SendBody(s.log, w, user)
 }
