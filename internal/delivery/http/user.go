@@ -13,7 +13,7 @@ import (
 )
 
 type UserUC interface {
-	CurrentUser(ctx context.Context, userID domain.UserID) (domain.User, error)
+	CurrentUser(ctx context.Context, userID domain.UserID) (*domain.User, error)
 }
 
 func (s *Server) CurrentUser(w http.ResponseWriter, r *http.Request) {

@@ -13,9 +13,9 @@ import (
 )
 
 type AuthUC interface {
-	Login(ctx context.Context, user domain.UserInput) (domain.SessionID, error)
+	Login(ctx context.Context, user *domain.UserInput) (domain.SessionID, error)
 	Logout(ctx context.Context, sessionID domain.SessionID) error
-	Register(ctx context.Context, user domain.UserInput) (domain.SessionID, error)
+	Register(ctx context.Context, user *domain.UserInput) (domain.SessionID, error)
 	GetUserID(ctx context.Context, sessionID domain.SessionID) (domain.UserID, error)
 }
 
@@ -30,7 +30,7 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sessionID, err := s.uc.Auth.Login(r.Context(), *input)
+	sessionID, err := s.uc.Auth.Login(r.Context(), input)
 
 	if errors.Is(err, resterr.ErrNotFound) {
 		s.log.Errorw("could not login", zap.Error(err))
@@ -98,7 +98,7 @@ func (s *Server) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sessionID, err := s.uc.Auth.Register(r.Context(), *input)
+	sessionID, err := s.uc.Auth.Register(r.Context(), input)
 
 	if errors.Is(err, resterr.ErrConflict) {
 		s.log.Errorw("could not register", zap.Error(err))
