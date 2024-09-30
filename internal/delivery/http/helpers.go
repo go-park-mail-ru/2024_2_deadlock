@@ -33,6 +33,8 @@ func (s *Server) ProcessInternalServerError(w http.ResponseWriter, err error) {
 }
 
 func (s *Server) SendBody(w http.ResponseWriter, v interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+
 	body := new(ResponseBody)
 	body.Body = v
 
