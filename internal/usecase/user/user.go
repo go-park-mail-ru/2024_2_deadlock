@@ -7,10 +7,19 @@ import (
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/usecase"
 )
 
-type Usecase struct {
-	usecase.CommonUC
+type Repository interface {
+	GetByID(ctx context.Context, user domain.UserID) (*domain.User, error)
 }
 
-func (uc *Usecase) CurrentUser(ctx context.Context, userID domain.UserID) (domain.User, error) {
-	panic("implement me")
+type Repositories struct {
+	User Repository
+}
+
+type Usecase struct {
+	usecase.CommonUC
+	repo Repositories
+}
+
+func (uc *Usecase) CurrentUser(ctx context.Context, userID domain.UserID) (*domain.User, error) {
+	return uc.repo.User.GetByID(ctx, userID)
 }
