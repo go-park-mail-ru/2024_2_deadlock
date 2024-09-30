@@ -10,4 +10,5 @@ func (s *Server) makeRoutes() {
 	v1.HandleFunc("/login", s.Login)
 	v1.HandleFunc("/logout", s.Logout)
 	v1.HandleFunc("/register", s.Register)
+	v1.HandleFunc("/me", s.CurrentUser)
 }
