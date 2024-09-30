@@ -8,14 +8,14 @@ import (
 )
 
 type SessionRepository interface {
-	CreateSession(ctx context.Context, userID domain.UserID) (domain.SessionID, error)
-	DeleteSession(ctx context.Context, sessionID domain.SessionID) error
+	Create(ctx context.Context, userID domain.UserID) (domain.SessionID, error)
+	Delete(ctx context.Context, sessionID domain.SessionID) error
 	GetUserID(ctx context.Context, sessionID domain.SessionID) (domain.UserID, error)
 }
 
 type UserRepository interface {
-	GetByID(ctx context.Context, userID domain.UserID) (domain.User, error)
-	Create(ctx context.Context, user domain.UserInput) (domain.UserID, error)
+	Get(ctx context.Context, user domain.UserInput) (domain.User, error)
+	Create(ctx context.Context, user domain.UserInput) (domain.User, error)
 }
 
 type Repositories struct {
@@ -29,13 +29,23 @@ type Usecase struct {
 }
 
 func (uc *Usecase) Login(ctx context.Context, user domain.UserInput) (domain.SessionID, error) {
-	panic("implement me")
+	u, err := uc.repo.User.Get(ctx, user)
+	if err != nil {
+		return "", err
+	}
+
+	return uc.repo.Session.Create(ctx, u.ID)
 }
 
 func (uc *Usecase) Logout(ctx context.Context, sessionID domain.SessionID) error {
-	panic("implement me")
+	return uc.repo.Session.Delete(ctx, sessionID)
 }
 
 func (uc *Usecase) Register(ctx context.Context, user domain.UserInput) (domain.SessionID, error) {
-	panic("implement me")
+	u, err := uc.repo.User.Create(ctx, user)
+	if err != nil {
+		return "", err
+	}
+
+	return uc.repo.Session.Create(ctx, u.ID)
 }
