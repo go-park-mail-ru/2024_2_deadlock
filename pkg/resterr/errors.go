@@ -18,92 +18,87 @@ var (
 type RestErr interface {
 	Status() int
 	Error() string
-	Causes() interface{}
 	Unwrap() error
 }
 
 type RestError struct {
-	ErrStatus int         `json:"-"`
-	ErrError  error       `json:"-"`
-	ErrCode   string      `json:"code,omitempty"`
-	ErrCauses interface{} `json:"message,omitempty"`
+	StatusCode int         `json:"-"`
+	Err        error       `json:"-"`
+	Code       string      `json:"code,omitempty"`
+	Causes     interface{} `json:"message,omitempty"`
 }
 
 func (e RestError) Error() string {
-	return fmt.Sprintf("status: %d - error: %s - causes: %v", e.ErrStatus, e.ErrError, e.ErrCauses)
-}
-
-func (e RestError) Status() int {
-	return e.ErrStatus
-}
-
-func (e RestError) Causes() interface{} {
-	return e.ErrCauses
+	return fmt.Sprintf("%s: %s", e.Causes, e.Err)
 }
 
 func (e RestError) Unwrap() error {
-	return e.ErrError
+	return e.Err
+}
+
+func (e RestError) Status() int {
+	return e.StatusCode
 }
 
 func NewRestError(status int, code string, err error, causes interface{}) RestErr {
 	return RestError{
-		ErrStatus: status,
-		ErrError:  err,
-		ErrCode:   code,
-		ErrCauses: causes,
+		StatusCode: status,
+		Err:        err,
+		Code:       code,
+		Causes:     causes,
 	}
 }
 
 func NewBadRequestError(causes interface{}) RestErr {
 	return RestError{
-		ErrStatus: http.StatusBadRequest,
-		ErrError:  ErrBadRequest,
-		ErrCode:   "bad_request",
-		ErrCauses: causes,
+		StatusCode: http.StatusBadRequest,
+		Err:        ErrBadRequest,
+		Code:       "bad_request",
+		Causes:     causes,
 	}
 }
 
 func NewNotFoundError(causes interface{}) RestErr {
 	return RestError{
-		ErrStatus: http.StatusNotFound,
-		ErrError:  ErrNotFound,
-		ErrCode:   "not_found",
-		ErrCauses: causes,
+		StatusCode: http.StatusNotFound,
+		Err:        ErrNotFound,
+		Code:       "not_found",
+		Causes:     causes,
 	}
 }
 
 func NewConflictError(causes interface{}) RestErr {
 	return RestError{
-		ErrStatus: http.StatusConflict,
-		ErrError:  ErrConflict,
-		ErrCode:   "conflict",
-		ErrCauses: causes,
+		StatusCode: http.StatusConflict,
+		Err:        ErrConflict,
+		Code:       "conflict",
+		Causes:     causes,
 	}
 }
 
 func NewForbiddenError(causes interface{}) RestErr {
 	return RestError{
-		ErrStatus: http.StatusForbidden,
-		ErrError:  ErrForbidden,
-		ErrCode:   "forbidden",
-		ErrCauses: causes,
+		StatusCode: http.StatusForbidden,
+		Err:        ErrForbidden,
+		Code:       "forbidden",
+		Causes:     causes,
 	}
 }
 
 func NewUnauthorizedError(causes interface{}) RestErr {
 	return RestError{
-		ErrStatus: http.StatusUnauthorized,
-		ErrError:  ErrUnauthorized,
-		ErrCode:   "unauthorized",
-		ErrCauses: causes,
+		StatusCode: http.StatusUnauthorized,
+		Err:        ErrUnauthorized,
+		Code:       "unauthorized",
+		Causes:     causes,
 	}
 }
 
 func NewInternalServerError(causes interface{}) RestErr {
 	return RestError{
-		ErrStatus: http.StatusInternalServerError,
-		ErrError:  ErrInternalServer,
-		ErrCode:   "internal_server_error",
-		ErrCauses: causes,
+		StatusCode: http.StatusInternalServerError,
+		Err:        ErrInternalServer,
+		Code:       "internal_server_error",
+		Causes:     causes,
 	}
 }
