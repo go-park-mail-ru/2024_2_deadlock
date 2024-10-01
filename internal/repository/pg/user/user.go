@@ -34,11 +34,11 @@ func (r *Repository) Create(ctx context.Context, input *domain.UserInput) (*doma
 	err := r.PG.QueryRow(ctx, q, input.Email, input.Password).Scan(&user.ID, &user.Email)
 
 	if pgerr.IsAlreadyExistsError(err) {
-		return nil, interr.NewAlreadyExistsError("")
+		return nil, interr.NewAlreadyExistsError("user Repository.Create pg.QueryRow")
 	}
 
 	if err != nil {
-		return nil, interr.NewInternalError(err, "repo: create user")
+		return nil, interr.NewInternalError(err, "user Repository.Create pg.QueryRow")
 	}
 
 	return &user, nil
@@ -52,11 +52,11 @@ func (r *Repository) Get(ctx context.Context, input *domain.UserInput) (*domain.
 	err := r.PG.QueryRow(ctx, q, input.Email, input.Password).Scan(&user.ID, &user.Email)
 
 	if errors.Is(err, pgx.ErrNoRows) {
-		return nil, interr.NewNotFoundError("repo: user not found")
+		return nil, interr.NewNotFoundError("user Repository.Get pg.QueryRow")
 	}
 
 	if err != nil {
-		return nil, interr.NewInternalError(err, "get user")
+		return nil, interr.NewInternalError(err, "user Repository.Get pg.QueryRow")
 	}
 
 	return &user, nil
@@ -69,11 +69,11 @@ func (r *Repository) GetByID(ctx context.Context, userID domain.UserID) (*domain
 	err := r.PG.QueryRow(ctx, q, userID).Scan(&user.ID, &user.Email)
 
 	if errors.Is(err, pgx.ErrNoRows) {
-		return nil, interr.NewNotFoundError("user not found")
+		return nil, interr.NewNotFoundError("user Repository.GetByID pg.QueryRow")
 	}
 
 	if err != nil {
-		return nil, interr.NewInternalError(err, "get user")
+		return nil, interr.NewInternalError(err, "user Repository.GetByID pg.QueryRow")
 	}
 
 	return &user, nil

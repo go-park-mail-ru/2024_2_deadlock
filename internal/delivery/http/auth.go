@@ -34,7 +34,7 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 	sessionID, err := s.uc.Auth.Login(r.Context(), input)
 
 	if errors.Is(err, interr.ErrNotFound) {
-		s.log.Errorw("could not login", zap.Error(err))
+		s.log.Errorw("user not found", zap.Error(err))
 		utils.SendError(s.log, w, resterr.NewNotFoundError("user not found"))
 
 		return
@@ -100,7 +100,7 @@ func (s *Server) Register(w http.ResponseWriter, r *http.Request) {
 	sessionID, err := s.uc.Auth.Register(r.Context(), input)
 
 	if errors.Is(err, interr.ErrAlreadyExists) {
-		s.log.Errorw("could not register", zap.Error(err))
+		s.log.Errorw("user already exists", zap.Error(err))
 		utils.SendError(s.log, w, resterr.NewConflictError("user already exists"))
 
 		return

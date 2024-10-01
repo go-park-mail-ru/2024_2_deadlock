@@ -24,7 +24,7 @@ func (s *Storage) Create(ctx context.Context, userID domain.UserID) (domain.Sess
 
 	randS, err := rand.String(64)
 	if err != nil {
-		return "", interr.NewInternalError(err, "session: create session")
+		return "", interr.NewInternalError(err, "session Storage.Create rand.String")
 	}
 
 	sid := domain.SessionID(randS)
@@ -48,7 +48,7 @@ func (s *Storage) GetUserID(ctx context.Context, sessionID domain.SessionID) (do
 
 	userID, ok := s.sessions[sessionID]
 	if !ok {
-		return 0, interr.NewNotFoundError("session: session not found")
+		return 0, interr.NewNotFoundError("session Storage.GetUserID s.sessions")
 	}
 
 	return userID, nil
