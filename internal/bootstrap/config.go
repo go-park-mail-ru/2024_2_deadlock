@@ -19,8 +19,9 @@ type Session struct {
 }
 
 type Server struct {
-	Port    int     `mapstructure:"port"`
-	Session Session `mapstructure:"session"`
+	Port             int      `mapstructure:"port"`
+	Session          Session  `mapstructure:"session"`
+	CorsAllowOrigins []string `mapstructure:"cors_allow_origins"`
 }
 
 type Database struct {
