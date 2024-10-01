@@ -1,4 +1,4 @@
-package http
+package v1
 
 import (
 	"context"
@@ -17,14 +17,14 @@ type UserUC interface {
 	CurrentUser(ctx context.Context, userID domain.UserID) (*domain.User, error)
 }
 
-func (s *Server) CurrentUser(w http.ResponseWriter, r *http.Request) {
+func (s Handler) CurrentUser(w http.ResponseWriter, r *http.Request) {
 	userID := utils.GetCtxUserID(r.Context())
 	if userID == 0 {
 		utils.SendError(s.log, w, resterr.NewUnauthorizedError("unauthorized, please login"))
 		return
 	}
 
-	user, err := s.uc.User.CurrentUser(r.Context(), userID)
+	user, err := s.UC.User.CurrentUser(r.Context(), userID)
 
 	if errors.Is(err, interr.ErrNotFound) {
 		s.log.Errorw("current user not found", zap.Error(err))

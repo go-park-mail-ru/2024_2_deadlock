@@ -8,7 +8,8 @@ import (
 
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/adapters"
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/bootstrap"
-	"github.com/go-park-mail-ru/2024_2_deadlock/internal/delivery/http"
+	"github.com/go-park-mail-ru/2024_2_deadlock/internal/delivery/http/common"
+	v1 "github.com/go-park-mail-ru/2024_2_deadlock/internal/delivery/http/v1"
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/depgraph"
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/repository/local/session"
 	pguser "github.com/go-park-mail-ru/2024_2_deadlock/internal/repository/pg/user"
@@ -18,7 +19,7 @@ import (
 
 type APIEntrypoint struct {
 	Config *bootstrap.Config
-	server *http.Server
+	server *common.Server
 }
 
 func (e *APIEntrypoint) Init(ctx context.Context) error {
@@ -46,12 +47,15 @@ func (e *APIEntrypoint) Init(ctx context.Context) error {
 		User: userRepo,
 	})
 
-	ucs := http.UseCases{
+	ucs := v1.UseCases{
 		User: userUC,
 		Auth: authUC,
 	}
 
-	e.server = http.NewServer(e.Config, logger, ucs)
+	handlerV1 := v1.NewHandler(e.Config, logger, ucs)
+	handlers := common.Handlers{V1: handlerV1}
+
+	e.server = common.NewServer(e.Config, logger, handlers)
 
 	return nil
 }

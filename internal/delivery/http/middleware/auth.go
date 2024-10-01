@@ -1,4 +1,4 @@
-package http
+package middleware
 
 import (
 	"context"
@@ -8,11 +8,12 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/bootstrap"
+	v1 "github.com/go-park-mail-ru/2024_2_deadlock/internal/delivery/http/v1"
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/utils"
 	"github.com/go-park-mail-ru/2024_2_deadlock/pkg/resterr"
 )
 
-func AuthMW(log *zap.SugaredLogger, cfg *bootstrap.Config, auth AuthUC) func(http.Handler) http.Handler {
+func AuthMW(log *zap.SugaredLogger, cfg *bootstrap.Config, auth v1.AuthUC) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			_, err := r.Cookie(cfg.Server.Session.Cookie.Name)

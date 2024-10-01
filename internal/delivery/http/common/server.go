@@ -1,4 +1,4 @@
-package http
+package common
 
 import (
 	"fmt"
@@ -9,26 +9,26 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/bootstrap"
+	v1 "github.com/go-park-mail-ru/2024_2_deadlock/internal/delivery/http/v1"
 )
 
-type UseCases struct {
-	Auth AuthUC
-	User UserUC
+type Handlers struct {
+	V1 *v1.Handler
 }
 
 type Server struct {
-	cfg  *bootstrap.Config
-	log  *zap.SugaredLogger
-	http *http.Server
-	mux  *mux.Router
-	uc   UseCases
+	cfg      *bootstrap.Config
+	log      *zap.SugaredLogger
+	http     *http.Server
+	mux      *mux.Router
+	handlers Handlers
 }
 
-func NewServer(cfg *bootstrap.Config, log *zap.SugaredLogger, uc UseCases) *Server {
+func NewServer(cfg *bootstrap.Config, log *zap.SugaredLogger, handlers Handlers) *Server {
 	s := &Server{
-		cfg: cfg,
-		log: log,
-		uc:  uc,
+		cfg:      cfg,
+		log:      log,
+		handlers: handlers,
 	}
 	s.makeRoutes()
 

@@ -1,4 +1,4 @@
-package http
+package v1
 
 import (
 	"context"
@@ -20,7 +20,7 @@ type AuthUC interface {
 	GetUserID(ctx context.Context, sessionID domain.SessionID) (domain.UserID, error)
 }
 
-func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
+func (s Handler) Login(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	input := new(domain.UserInput)
@@ -31,7 +31,7 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sessionID, err := s.uc.Auth.Login(r.Context(), input)
+	sessionID, err := s.UC.Auth.Login(r.Context(), input)
 
 	if errors.Is(err, interr.ErrNotFound) {
 		s.log.Errorw("user not found", zap.Error(err))
@@ -58,7 +58,7 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, cookie)
 }
 
-func (s *Server) Logout(w http.ResponseWriter, r *http.Request) {
+func (s Handler) Logout(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	cookie, err := r.Cookie("session_id")
@@ -67,7 +67,7 @@ func (s *Server) Logout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = s.uc.Auth.Logout(r.Context(), domain.SessionID(cookie.Value))
+	err = s.UC.Auth.Logout(r.Context(), domain.SessionID(cookie.Value))
 	if err != nil {
 		utils.ProcessInternalServerError(s.log, w, err)
 		return
@@ -86,7 +86,7 @@ func (s *Server) Logout(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, cookie)
 }
 
-func (s *Server) Register(w http.ResponseWriter, r *http.Request) {
+func (s Handler) Register(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	input := new(domain.UserInput)
@@ -97,7 +97,7 @@ func (s *Server) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sessionID, err := s.uc.Auth.Register(r.Context(), input)
+	sessionID, err := s.UC.Auth.Register(r.Context(), input)
 
 	if errors.Is(err, interr.ErrAlreadyExists) {
 		s.log.Errorw("user already exists", zap.Error(err))
