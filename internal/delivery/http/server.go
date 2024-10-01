@@ -43,7 +43,7 @@ func (s *Server) Run() error {
 
 	s.log.Infof("http server started on port %d", s.cfg.Server.Port)
 
-	if err := s.http.ListenAndServe(); errors.Is(err, http.ErrServerClosed) {
+	if err := s.http.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
 		return errors.Wrap(err, "http server listen and serve")
 	}
 
