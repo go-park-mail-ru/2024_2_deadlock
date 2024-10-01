@@ -8,7 +8,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/bootstrap"
-	utils2 "github.com/go-park-mail-ru/2024_2_deadlock/internal/utils"
+	"github.com/go-park-mail-ru/2024_2_deadlock/internal/utils"
 	"github.com/go-park-mail-ru/2024_2_deadlock/pkg/resterr"
 )
 
@@ -19,7 +19,7 @@ func AuthMW(log *zap.SugaredLogger, cfg *bootstrap.Config, auth AuthUC) func(htt
 
 			if err != nil && !errors.Is(err, http.ErrNoCookie) {
 				log.Errorw("could not get cookie", zap.Error(err))
-				utils2.ProcessBadRequestError(log, w, err)
+				utils.ProcessBadRequestError(log, w, err)
 			}
 
 			if errors.Is(err, http.ErrNoCookie) {
@@ -27,12 +27,12 @@ func AuthMW(log *zap.SugaredLogger, cfg *bootstrap.Config, auth AuthUC) func(htt
 				return
 			}
 
-			id, err := auth.GetUserID(r.Context(), utils2.GetCookieSessionID(cfg, r))
+			id, err := auth.GetUserID(r.Context(), utils.GetCookieSessionID(cfg, r))
 			if errors.Is(err, resterr.ErrNotFound) {
 				return
 			}
 
-			ctx := context.WithValue(r.Context(), utils2.CtxKeyUserID{}, id)
+			ctx := context.WithValue(r.Context(), utils.CtxKeyUserID{}, id)
 			r = r.WithContext(ctx)
 
 			next.ServeHTTP(w, r)
