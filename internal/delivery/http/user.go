@@ -27,7 +27,7 @@ func (s *Server) CurrentUser(w http.ResponseWriter, r *http.Request) {
 	user, err := s.uc.User.CurrentUser(r.Context(), userID)
 
 	if errors.Is(err, interr.ErrNotFound) {
-		s.log.Errorw("could not get current user", zap.Error(err))
+		s.log.Errorw("current user not found", zap.Error(err))
 		utils.SendError(s.log, w, resterr.NewNotFoundError("user not found"))
 
 		return
