@@ -4,13 +4,13 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/pkg/errors"
 
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/adapters"
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/domain"
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/repository/pg"
 	"github.com/go-park-mail-ru/2024_2_deadlock/pkg/interr"
+	"github.com/go-park-mail-ru/2024_2_deadlock/pkg/pgerr"
 )
 
 type Repository struct {
@@ -33,8 +33,7 @@ func (r *Repository) Create(ctx context.Context, input *domain.UserInput) (*doma
 	var user domain.User
 	err := r.PG.QueryRow(ctx, q, input.Email, input.Password).Scan(&user.ID, &user.Email)
 
-	var pgErr *pgconn.PgError
-	if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+	if pgerr.IsAlreadyExistsError(err) {
 		return nil, interr.NewAlreadyExistsError("user already exists")
 	}
 
