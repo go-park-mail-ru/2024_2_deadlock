@@ -34,7 +34,7 @@ func (r *Repository) Create(ctx context.Context, input *domain.UserInput) (*doma
 	err := r.PG.QueryRow(ctx, q, input.Email, input.Password).Scan(&user.ID, &user.Email)
 
 	if pgerr.IsAlreadyExistsError(err) {
-		return nil, interr.NewAlreadyExistsError("user already exists")
+		return nil, interr.NewAlreadyExistsError("")
 	}
 
 	if err != nil {
