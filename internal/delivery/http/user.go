@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/domain"
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/utils"
+	"github.com/go-park-mail-ru/2024_2_deadlock/pkg/interr"
 	"github.com/go-park-mail-ru/2024_2_deadlock/pkg/resterr"
 )
 
@@ -25,7 +26,7 @@ func (s *Server) CurrentUser(w http.ResponseWriter, r *http.Request) {
 
 	user, err := s.uc.User.CurrentUser(r.Context(), userID)
 
-	if errors.Is(err, resterr.ErrNotFound) {
+	if errors.Is(err, interr.ErrNotFound) {
 		s.log.Errorw("could not get current user", zap.Error(err))
 		utils.SendError(s.log, w, resterr.NewNotFoundError("user not found"))
 

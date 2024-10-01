@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/domain"
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/utils"
+	"github.com/go-park-mail-ru/2024_2_deadlock/pkg/interr"
 	"github.com/go-park-mail-ru/2024_2_deadlock/pkg/resterr"
 )
 
@@ -32,7 +33,7 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 
 	sessionID, err := s.uc.Auth.Login(r.Context(), input)
 
-	if errors.Is(err, resterr.ErrNotFound) {
+	if errors.Is(err, interr.ErrNotFound) {
 		s.log.Errorw("could not login", zap.Error(err))
 		utils.SendError(s.log, w, resterr.NewNotFoundError("user not found"))
 
@@ -98,7 +99,7 @@ func (s *Server) Register(w http.ResponseWriter, r *http.Request) {
 
 	sessionID, err := s.uc.Auth.Register(r.Context(), input)
 
-	if errors.Is(err, resterr.ErrConflict) {
+	if errors.Is(err, interr.ErrAlreadyExists) {
 		s.log.Errorw("could not register", zap.Error(err))
 		utils.SendError(s.log, w, resterr.NewConflictError("user already exists"))
 
