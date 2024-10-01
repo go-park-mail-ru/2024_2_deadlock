@@ -62,9 +62,7 @@ func (s *Server) Logout(w http.ResponseWriter, r *http.Request) {
 
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
-		s.log.Errorw("could not get session id from cookies", zap.Error(err))
-		utils.SendError(s.log, w, resterr.NewUnauthorizedError(err))
-
+		utils.SendError(s.log, w, resterr.NewUnauthorizedError("unauthorized, please login"))
 		return
 	}
 
