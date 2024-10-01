@@ -20,6 +20,12 @@ type Usecase struct {
 	repo Repositories
 }
 
+func NewUsecase(repo Repositories) *Usecase {
+	return &Usecase{
+		repo: repo,
+	}
+}
+
 func (uc *Usecase) CurrentUser(ctx context.Context, userID domain.UserID) (*domain.User, error) {
 	return uc.repo.User.GetByID(ctx, userID)
 }
