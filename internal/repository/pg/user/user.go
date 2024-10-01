@@ -10,7 +10,7 @@ import (
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/domain"
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/repository/pg"
 	"github.com/go-park-mail-ru/2024_2_deadlock/pkg/interr"
-	"github.com/go-park-mail-ru/2024_2_deadlock/pkg/pgerr"
+	"github.com/go-park-mail-ru/2024_2_deadlock/pkg/pgutils"
 )
 
 type Repository struct {
@@ -33,7 +33,7 @@ func (r *Repository) Create(ctx context.Context, input *domain.UserInput) (*doma
 	var user domain.User
 	err := r.PG.QueryRow(ctx, q, input.Email, input.Password).Scan(&user)
 
-	if pgerr.IsAlreadyExistsError(err) {
+	if pgutils.IsAlreadyExistsError(err) {
 		return nil, interr.NewAlreadyExistsError("user Repository.Create pg.QueryRow")
 	}
 
