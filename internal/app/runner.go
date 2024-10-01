@@ -51,7 +51,6 @@ func Run(ctx context.Context, e Entrypoint) error {
 
 	if err := eg.Wait(); err != nil {
 		logger.Infof("app was shut down, reason: %s", err)
-		logger.Errorw("entrypoint init error", zap.Error(err))
 	}
 
 	return nil
