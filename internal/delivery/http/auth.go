@@ -8,7 +8,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/domain"
-	utils2 "github.com/go-park-mail-ru/2024_2_deadlock/internal/utils"
+	"github.com/go-park-mail-ru/2024_2_deadlock/internal/utils"
 	"github.com/go-park-mail-ru/2024_2_deadlock/pkg/resterr"
 )
 
@@ -24,9 +24,9 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 
 	input := new(domain.UserInput)
 
-	err := utils2.DecodeBody(r, input)
+	err := utils.DecodeBody(r, input)
 	if err != nil {
-		utils2.ProcessBadRequestError(s.log, w, err)
+		utils.ProcessBadRequestError(s.log, w, err)
 		return
 	}
 
@@ -34,13 +34,13 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 
 	if errors.Is(err, resterr.ErrNotFound) {
 		s.log.Errorw("could not login", zap.Error(err))
-		utils2.SendError(s.log, w, resterr.NewNotFoundError("user not found"))
+		utils.SendError(s.log, w, resterr.NewNotFoundError("user not found"))
 
 		return
 	}
 
 	if err != nil {
-		utils2.ProcessInternalServerError(s.log, w, err)
+		utils.ProcessInternalServerError(s.log, w, err)
 		return
 	}
 
@@ -63,14 +63,14 @@ func (s *Server) Logout(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
 		s.log.Errorw("could not get session id from cookies", zap.Error(err))
-		utils2.SendError(s.log, w, resterr.NewUnauthorizedError(err))
+		utils.SendError(s.log, w, resterr.NewUnauthorizedError(err))
 
 		return
 	}
 
 	err = s.uc.Auth.Logout(r.Context(), domain.SessionID(cookie.Value))
 	if err != nil {
-		utils2.ProcessInternalServerError(s.log, w, err)
+		utils.ProcessInternalServerError(s.log, w, err)
 		return
 	}
 
@@ -92,9 +92,9 @@ func (s *Server) Register(w http.ResponseWriter, r *http.Request) {
 
 	input := new(domain.UserInput)
 
-	err := utils2.DecodeBody(r, input)
+	err := utils.DecodeBody(r, input)
 	if err != nil {
-		utils2.ProcessBadRequestError(s.log, w, err)
+		utils.ProcessBadRequestError(s.log, w, err)
 		return
 	}
 
@@ -102,13 +102,13 @@ func (s *Server) Register(w http.ResponseWriter, r *http.Request) {
 
 	if errors.Is(err, resterr.ErrConflict) {
 		s.log.Errorw("could not register", zap.Error(err))
-		utils2.SendError(s.log, w, resterr.NewConflictError("user already exists"))
+		utils.SendError(s.log, w, resterr.NewConflictError("user already exists"))
 
 		return
 	}
 
 	if err != nil {
-		utils2.ProcessInternalServerError(s.log, w, err)
+		utils.ProcessInternalServerError(s.log, w, err)
 		return
 	}
 
