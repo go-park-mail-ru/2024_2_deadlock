@@ -1,5 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE SCHEMA IF NOT EXISTS auth;
 
 CREATE TABLE IF NOT EXISTS auth.user (
@@ -13,4 +14,5 @@ CREATE TABLE IF NOT EXISTS auth.user (
 -- +goose StatementBegin
 DROP TABLE IF EXISTS auth.user;
 DROP SCHEMA IF EXISTS auth;
+DROP EXTENSION IF EXISTS pgcrypto;
 -- +goose StatementEnd
