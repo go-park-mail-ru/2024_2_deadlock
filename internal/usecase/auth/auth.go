@@ -55,3 +55,7 @@ func (uc *Usecase) Register(ctx context.Context, user *domain.UserInput) (domain
 
 	return uc.repo.Session.Create(ctx, u.ID)
 }
+
+func (uc *Usecase) GetUserID(ctx context.Context, sessionID domain.SessionID) (domain.UserID, error) {
+	return uc.repo.Session.GetUserID(ctx, sessionID)
+}
