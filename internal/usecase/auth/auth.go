@@ -28,6 +28,12 @@ type Usecase struct {
 	repo Repositories
 }
 
+func NewUsecase(repo Repositories) *Usecase {
+	return &Usecase{
+		repo: repo,
+	}
+}
+
 func (uc *Usecase) Login(ctx context.Context, user *domain.UserInput) (domain.SessionID, error) {
 	u, err := uc.repo.User.Get(ctx, user)
 	if err != nil {
