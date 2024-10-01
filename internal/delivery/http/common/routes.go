@@ -13,6 +13,9 @@ func (s *Server) makeRoutes() {
 
 	hV1 := s.handlers.V1
 
+	corsMW := middleware.CorsMW(s.cfg)
+	s.mux.Use(corsMW)
+
 	authMW := middleware.AuthMW(s.log, s.cfg, hV1.UC.Auth)
 	s.mux.Use(authMW)
 
