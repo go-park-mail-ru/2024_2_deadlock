@@ -9,7 +9,7 @@ import (
 )
 
 type ResponseBody struct {
-	Error resterr.RestErr `json:"error"`
+	Error resterr.RestErr `json:"error,omitempty"`
 	Data  interface{}     `json:"data"`
 }
 
