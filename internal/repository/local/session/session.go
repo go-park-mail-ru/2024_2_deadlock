@@ -5,8 +5,8 @@ import (
 	"sync"
 
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/domain"
+	"github.com/go-park-mail-ru/2024_2_deadlock/pkg/interr"
 	"github.com/go-park-mail-ru/2024_2_deadlock/pkg/rand"
-	"github.com/go-park-mail-ru/2024_2_deadlock/pkg/resterr"
 )
 
 type Storage struct {
@@ -24,7 +24,7 @@ func (s *Storage) Create(ctx context.Context, userID domain.UserID) (domain.Sess
 
 	randS, err := rand.String(64)
 	if err != nil {
-		return "", resterr.NewInternalServerError(err)
+		return "", interr.NewInternalError(err, "session: create session")
 	}
 
 	sid := domain.SessionID(randS)
@@ -48,7 +48,7 @@ func (s *Storage) GetUserID(ctx context.Context, sessionID domain.SessionID) (do
 
 	userID, ok := s.sessions[sessionID]
 	if !ok {
-		return 0, resterr.NewNotFoundError("session not found")
+		return 0, interr.NewNotFoundError("session: session not found")
 	}
 
 	return userID, nil

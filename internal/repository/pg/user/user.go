@@ -9,7 +9,7 @@ import (
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/adapters"
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/domain"
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/repository/pg"
-	"github.com/go-park-mail-ru/2024_2_deadlock/pkg/resterr"
+	"github.com/go-park-mail-ru/2024_2_deadlock/pkg/interr"
 )
 
 type Repository struct {
@@ -32,12 +32,8 @@ func (r *Repository) Create(ctx context.Context, input *domain.UserInput) (*doma
 	var user domain.User
 	err := r.PG.QueryRow(ctx, q, input.Email, input.Password).Scan(&user.ID, &user.Email)
 
-	if errors.Is(err, pgx.ErrNoRows) {
-		return nil, resterr.NewNotFoundError(err)
-	}
-
 	if err != nil {
-		return nil, resterr.NewInternalServerError(err)
+		return nil, interr.NewInternalError(err, "repo: create user")
 	}
 
 	return &user, nil
@@ -51,11 +47,11 @@ func (r *Repository) Get(ctx context.Context, input *domain.UserInput) (*domain.
 	err := r.PG.QueryRow(ctx, q, input.Email, input.Password).Scan(&user.ID, &user.Email)
 
 	if errors.Is(err, pgx.ErrNoRows) {
-		return nil, resterr.NewNotFoundError(err)
+		return nil, interr.NewNotFoundError("repo: user not found")
 	}
 
 	if err != nil {
-		return nil, resterr.NewInternalServerError(err)
+		return nil, interr.NewInternalError(err, "repo: get user")
 	}
 
 	return &user, nil
@@ -68,11 +64,11 @@ func (r *Repository) GetByID(ctx context.Context, userID domain.UserID) (*domain
 	err := r.PG.QueryRow(ctx, q, userID).Scan(&user.ID, &user.Email)
 
 	if errors.Is(err, pgx.ErrNoRows) {
-		return nil, resterr.NewNotFoundError(err)
+		return nil, interr.NewNotFoundError("repo: user not found")
 	}
 
 	if err != nil {
-		return nil, resterr.NewInternalServerError(err)
+		return nil, interr.NewInternalError(err, "repo: get user")
 	}
 
 	return &user, nil
