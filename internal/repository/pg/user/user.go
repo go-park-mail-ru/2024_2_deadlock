@@ -31,7 +31,7 @@ func (r *Repository) Create(ctx context.Context, input *domain.UserInput) (*doma
 		RETURNING (id, email)`
 
 	var user domain.User
-	err := r.PG.QueryRow(ctx, q, input.Email, input.Password).Scan(&user.ID, &user.Email)
+	err := r.PG.QueryRow(ctx, q, input.Email, input.Password).Scan(&user)
 
 	if pgerr.IsAlreadyExistsError(err) {
 		return nil, interr.NewAlreadyExistsError("user Repository.Create pg.QueryRow")
@@ -48,8 +48,8 @@ func (r *Repository) Get(ctx context.Context, input *domain.UserInput) (*domain.
 	q := `SELECT (id, email) FROM auth.user  
 		WHERE email = $1 AND password = crypt($2, password)`
 
-	var user domain.User
-	err := r.PG.QueryRow(ctx, q, input.Email, input.Password).Scan(&user.ID, &user.Email)
+	user := new(domain.User)
+	err := r.PG.QueryRow(ctx, q, input.Email, input.Password).Scan(&user)
 
 	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, interr.NewNotFoundError("user Repository.Get pg.QueryRow")
@@ -59,14 +59,14 @@ func (r *Repository) Get(ctx context.Context, input *domain.UserInput) (*domain.
 		return nil, interr.NewInternalError(err, "user Repository.Get pg.QueryRow")
 	}
 
-	return &user, nil
+	return user, nil
 }
 
 func (r *Repository) GetByID(ctx context.Context, userID domain.UserID) (*domain.User, error) {
 	q := `SELECT (id, email) FROM auth.user WHERE id = $1`
 
-	var user domain.User
-	err := r.PG.QueryRow(ctx, q, userID).Scan(&user.ID, &user.Email)
+	user := new(domain.User)
+	err := r.PG.QueryRow(ctx, q, userID).Scan(&user)
 
 	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, interr.NewNotFoundError("user Repository.GetByID pg.QueryRow")
@@ -76,5 +76,5 @@ func (r *Repository) GetByID(ctx context.Context, userID domain.UserID) (*domain
 		return nil, interr.NewInternalError(err, "user Repository.GetByID pg.QueryRow")
 	}
 
-	return &user, nil
+	return user, nil
 }
