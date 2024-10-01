@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/pkg/errors"
 
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/adapters"
@@ -32,6 +33,11 @@ func (r *Repository) Create(ctx context.Context, input *domain.UserInput) (*doma
 	var user domain.User
 	err := r.PG.QueryRow(ctx, q, input.Email, input.Password).Scan(&user.ID, &user.Email)
 
+	var pgErr *pgconn.PgError
+	if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+		return nil, interr.NewAlreadyExistsError("user already exists")
+	}
+
 	if err != nil {
 		return nil, interr.NewInternalError(err, "repo: create user")
 	}
@@ -51,7 +57,7 @@ func (r *Repository) Get(ctx context.Context, input *domain.UserInput) (*domain.
 	}
 
 	if err != nil {
-		return nil, interr.NewInternalError(err, "repo: get user")
+		return nil, interr.NewInternalError(err, "get user")
 	}
 
 	return &user, nil
@@ -64,11 +70,11 @@ func (r *Repository) GetByID(ctx context.Context, userID domain.UserID) (*domain
 	err := r.PG.QueryRow(ctx, q, userID).Scan(&user.ID, &user.Email)
 
 	if errors.Is(err, pgx.ErrNoRows) {
-		return nil, interr.NewNotFoundError("repo: user not found")
+		return nil, interr.NewNotFoundError("user not found")
 	}
 
 	if err != nil {
-		return nil, interr.NewInternalError(err, "repo: get user")
+		return nil, interr.NewInternalError(err, "get user")
 	}
 
 	return &user, nil
