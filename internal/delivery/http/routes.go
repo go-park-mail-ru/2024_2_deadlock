@@ -1,6 +1,8 @@
 package http
 
 import (
+	"net/http"
+
 	"github.com/gorilla/mux"
 )
 
@@ -12,8 +14,8 @@ func (s *Server) makeRoutes() {
 
 	v1 := s.mux.PathPrefix("/api/v1").Subrouter()
 
-	v1.HandleFunc("/login", s.Login)
-	v1.HandleFunc("/logout", s.Logout)
-	v1.HandleFunc("/register", s.Register)
-	v1.HandleFunc("/me", s.CurrentUser)
+	v1.HandleFunc("/login", s.Login).Methods(http.MethodPost)
+	v1.HandleFunc("/logout", s.Logout).Methods(http.MethodPost)
+	v1.HandleFunc("/register", s.Register).Methods(http.MethodPost)
+	v1.HandleFunc("/me", s.CurrentUser).Methods(http.MethodGet)
 }
