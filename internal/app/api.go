@@ -37,14 +37,19 @@ func (e *APIEntrypoint) Init(ctx context.Context) error {
 
 	authRepo := pg.NewAuthRepository(pgAdapter)
 	sessionRepo := local.NewSessionRepository()
+	articleRepo := pg.NewArticleRepository(pgAdapter)
 
 	authUC := usecase.NewAuthUsecase(usecase.AuthRepositories{
 		Auth:    authRepo,
 		Session: sessionRepo,
 	})
+	articleUC := usecase.NewArticleUsecase(usecase.ArticleRepositories{
+		Article: articleRepo,
+	})
 
 	ucs := v1.UseCases{
 		Auth: authUC,
+		Article: articleUC,
 	}
 
 	handlerV1 := v1.NewHandler(e.Config, logger, ucs)
