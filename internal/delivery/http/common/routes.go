@@ -25,4 +25,6 @@ func (s *Server) makeRoutes() {
 	v1.HandleFunc("/logout", hV1.Logout).Methods(http.MethodPost)
 	v1.HandleFunc("/register", hV1.Register).Methods(http.MethodPost)
 	v1.HandleFunc("/me", hV1.CurrentUser).Methods(http.MethodGet)
+
+	v1.HandleFunc("/feed", hV1.Feed).Methods(http.MethodGet)
 }
