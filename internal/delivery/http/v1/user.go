@@ -17,26 +17,26 @@ type UserUC interface {
 	CurrentUser(ctx context.Context, userID domain.UserID) (*domain.User, error)
 }
 
-func (s Handler) CurrentUser(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) CurrentUser(w http.ResponseWriter, r *http.Request) {
 	userID := utils.GetCtxUserID(r.Context())
 	if userID == 0 {
-		utils.SendError(s.log, w, resterr.NewUnauthorizedError("unauthorized, please login"))
+		utils.SendError(h.log, w, resterr.NewUnauthorizedError("unauthorized, please login"))
 		return
 	}
 
-	user, err := s.UC.User.CurrentUser(r.Context(), userID)
+	user, err := h.UC.User.CurrentUser(r.Context(), userID)
 
 	if errors.Is(err, interr.ErrNotFound) {
-		s.log.Errorw("current user not found", zap.Error(err))
-		utils.SendError(s.log, w, resterr.NewNotFoundError("user not found"))
+		h.log.Errorw("current user not found", zap.Error(err))
+		utils.SendError(h.log, w, resterr.NewNotFoundError("user not found"))
 
 		return
 	}
 
 	if err != nil {
-		utils.ProcessInternalServerError(s.log, w, err)
+		utils.ProcessInternalServerError(h.log, w, err)
 		return
 	}
 
-	utils.SendBody(s.log, w, user)
+	utils.SendBody(h.log, w, user)
 }

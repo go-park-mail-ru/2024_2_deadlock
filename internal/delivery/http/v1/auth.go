@@ -20,32 +20,32 @@ type AuthUC interface {
 	GetUserID(ctx context.Context, sessionID domain.SessionID) (domain.UserID, error)
 }
 
-func (s Handler) Login(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	input := new(domain.UserInput)
 
 	err := utils.DecodeBody(r, input)
 	if err != nil {
-		utils.ProcessBadRequestError(s.log, w, err)
+		utils.ProcessBadRequestError(h.log, w, err)
 		return
 	}
 
-	sessionID, err := s.UC.Auth.Login(r.Context(), input)
+	sessionID, err := h.UC.Auth.Login(r.Context(), input)
 
 	if errors.Is(err, interr.ErrNotFound) {
-		s.log.Errorw("user not found", zap.Error(err))
-		utils.SendError(s.log, w, resterr.NewNotFoundError("user not found"))
+		h.log.Errorw("user not found", zap.Error(err))
+		utils.SendError(h.log, w, resterr.NewNotFoundError("user not found"))
 
 		return
 	}
 
 	if err != nil {
-		utils.ProcessInternalServerError(s.log, w, err)
+		utils.ProcessInternalServerError(h.log, w, err)
 		return
 	}
 
-	cfg := s.cfg.Server.Session.Cookie
+	cfg := h.cfg.Server.Session.Cookie
 	cookie := &http.Cookie{
 		Name:     cfg.Name,
 		Value:    string(sessionID),
@@ -58,22 +58,22 @@ func (s Handler) Login(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, cookie)
 }
 
-func (s Handler) Logout(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
-		utils.SendError(s.log, w, resterr.NewUnauthorizedError("unauthorized, please login"))
+		utils.SendError(h.log, w, resterr.NewUnauthorizedError("unauthorized, please login"))
 		return
 	}
 
-	err = s.UC.Auth.Logout(r.Context(), domain.SessionID(cookie.Value))
+	err = h.UC.Auth.Logout(r.Context(), domain.SessionID(cookie.Value))
 	if err != nil {
-		utils.ProcessInternalServerError(s.log, w, err)
+		utils.ProcessInternalServerError(h.log, w, err)
 		return
 	}
 
-	cfg := s.cfg.Server.Session.Cookie
+	cfg := h.cfg.Server.Session.Cookie
 	cookie = &http.Cookie{
 		Name:     cfg.Name,
 		Value:    "",
@@ -86,32 +86,32 @@ func (s Handler) Logout(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, cookie)
 }
 
-func (s Handler) Register(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	input := new(domain.UserInput)
 
 	err := utils.DecodeBody(r, input)
 	if err != nil {
-		utils.ProcessBadRequestError(s.log, w, err)
+		utils.ProcessBadRequestError(h.log, w, err)
 		return
 	}
 
-	sessionID, err := s.UC.Auth.Register(r.Context(), input)
+	sessionID, err := h.UC.Auth.Register(r.Context(), input)
 
 	if errors.Is(err, interr.ErrAlreadyExists) {
-		s.log.Errorw("user already exists", zap.Error(err))
-		utils.SendError(s.log, w, resterr.NewConflictError("user already exists"))
+		h.log.Errorw("user already exists", zap.Error(err))
+		utils.SendError(h.log, w, resterr.NewConflictError("user already exists"))
 
 		return
 	}
 
 	if err != nil {
-		utils.ProcessInternalServerError(s.log, w, err)
+		utils.ProcessInternalServerError(h.log, w, err)
 		return
 	}
 
-	cfg := s.cfg.Server.Session.Cookie
+	cfg := h.cfg.Server.Session.Cookie
 	cookie := &http.Cookie{
 		Name:     cfg.Name,
 		Value:    string(sessionID),
