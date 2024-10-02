@@ -56,6 +56,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.SetCookie(w, cookie)
+	utils.SendBody(h.log, w, struct{}{})
 }
 
 func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
@@ -84,6 +85,7 @@ func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.SetCookie(w, cookie)
+	utils.SendBody(h.log, w, struct{}{})
 }
 
 func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
@@ -122,4 +124,5 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.SetCookie(w, cookie)
+	utils.SendBody(h.log, w, struct{}{})
 }
