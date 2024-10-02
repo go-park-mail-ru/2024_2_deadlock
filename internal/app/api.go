@@ -12,7 +12,9 @@ import (
 	v1 "github.com/go-park-mail-ru/2024_2_deadlock/internal/delivery/http/v1"
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/depgraph"
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/repository/local/session"
+	pgarticle "github.com/go-park-mail-ru/2024_2_deadlock/internal/repository/pg/article"
 	pguser "github.com/go-park-mail-ru/2024_2_deadlock/internal/repository/pg/user"
+	"github.com/go-park-mail-ru/2024_2_deadlock/internal/usecase/article"
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/usecase/auth"
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/usecase/user"
 )
@@ -38,6 +40,7 @@ func (e *APIEntrypoint) Init(ctx context.Context) error {
 
 	userRepo := pguser.NewRepository(pgAdapter)
 	sessionRepo := session.NewStorage()
+	articleRepo := pgarticle.NewRepository(pgAdapter)
 
 	authUC := auth.NewUsecase(auth.Repositories{
 		Session: sessionRepo,
@@ -46,10 +49,14 @@ func (e *APIEntrypoint) Init(ctx context.Context) error {
 	userUC := user.NewUsecase(user.Repositories{
 		User: userRepo,
 	})
+	articleUC := article.NewUsecase(article.Repositories{
+		Article: articleRepo,
+	})
 
 	ucs := v1.UseCases{
-		User: userUC,
-		Auth: authUC,
+		User:    userUC,
+		Auth:    authUC,
+		Article: articleUC,
 	}
 
 	handlerV1 := v1.NewHandler(e.Config, logger, ucs)
