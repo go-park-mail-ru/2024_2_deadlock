@@ -11,6 +11,7 @@ COPY go.sum go.sum
 
 RUN make mod-download
 
+COPY dev.yaml dev.yaml
 COPY . .
 
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 make build
@@ -18,8 +19,9 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 make build
 FROM scratch
 WORKDIR /
 COPY --from=builder /workspace/bin/server .
+COPY --from=builder /workspace/dev.yaml .
 
 # Run as non-root
 USER 65532:65532
 
-ENTRYPOINT ["/server"]
+ENTRYPOINT ["/server", "api", "-c", "dev.yaml"]
