@@ -1,2 +1,14 @@
+server:
+  port: 8000
+  session:
+    cookie:
+      name: session_id
+      path: /
+      max_age: 12h
+      http_only: true
+      secure: false
+  cors_allow_origins:
+    - http://localhost:3000
+    - https://dead-vc.ru
 database:
   url: postgresql://postgres:postgres@localhost:5432/postgres?sslmode=disable
