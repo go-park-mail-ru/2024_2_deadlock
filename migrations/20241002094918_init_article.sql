@@ -1,8 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE SCHEMA IF NOT EXISTS feed;
-
-CREATE TABLE IF NOT EXISTS feed.article (
+CREATE TABLE IF NOT EXISTS article (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     title TEXT NOT NULL,
     media_url TEXT,
@@ -12,6 +10,5 @@ CREATE TABLE IF NOT EXISTS feed.article (
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE IF EXISTS feed.article;
-DROP SCHEMA IF EXISTS feed;
+DROP TABLE IF EXISTS article;
 -- +goose StatementEnd
