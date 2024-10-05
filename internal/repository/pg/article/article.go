@@ -22,7 +22,7 @@ func NewRepository(adapter *adapters.AdapterPG) *Repository {
 }
 
 func (r *Repository) ListArticles(ctx context.Context) ([]*domain.Article, error) {
-	q := `SELECT (id, title, media_url, body) FROM feed.article`
+	q := `SELECT (id, title, media_url, body, author_id) FROM feed.article`
 
 	rows, err := r.PG.Query(ctx, q)
 	if err != nil {
@@ -44,6 +44,35 @@ func (r *Repository) ListArticles(ctx context.Context) ([]*domain.Article, error
 
 	if err := rows.Err(); err != nil {
 		return nil, interr.NewNotFoundError("article Repository.Get rows.Err")
+	}
+
+	return rowSlice, nil
+}
+
+func (r *Repository) GetUserArticles(ctx context.Context, authorID domain.UserID) ([]*domain.Article, error) {
+	q := `SELECT (id, title, media_url, body, author_id) FROM feed.article
+	WHERE author_id = $1`
+
+	rows, err := r.PG.Query(ctx, q, authorID)
+	if err != nil {
+		return nil, interr.NewNotFoundError("user Repository.Get pg.Query")
+	}
+
+	var rowSlice []*domain.Article
+
+	for rows.Next() {
+		a := new(domain.Article)
+
+		err := rows.Scan(&a)
+		if err != nil {
+			return nil, interr.NewNotFoundError("user Repository.Get rows.Scan")
+		}
+
+		rowSlice = append(rowSlice, a)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, interr.NewNotFoundError("user Repository.Get rows.Err")
 	}
 
 	return rowSlice, nil

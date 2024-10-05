@@ -27,4 +27,6 @@ func (s *Server) makeRoutes() {
 	v1.HandleFunc("/me", hV1.CurrentUser).Methods(http.MethodGet)
 
 	v1.HandleFunc("/feed", hV1.Feed).Methods(http.MethodGet)
+
+	v1.HandleFunc("/users/{authorID:[0-9]+}/articles", hV1.UserArticles).Methods(http.MethodGet)
 }

@@ -9,6 +9,7 @@ import (
 
 type Repository interface {
 	ListArticles(ctx context.Context) ([]*domain.Article, error)
+	GetUserArticles(ctx context.Context, authorID domain.UserID) ([]*domain.Article, error)
 }
 
 type Repositories struct {
@@ -28,4 +29,8 @@ func NewUsecase(repo Repositories) *Usecase {
 
 func (uc *Usecase) GetFeed(ctx context.Context) ([]*domain.Article, error) {
 	return uc.repo.Article.ListArticles(ctx)
+}
+
+func (uc *Usecase) GetUserArticles(ctx context.Context, authorID domain.UserID) ([]*domain.Article, error) {
+	return uc.repo.Article.GetUserArticles(ctx, authorID)
 }
