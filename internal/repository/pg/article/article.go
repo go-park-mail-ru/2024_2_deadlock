@@ -22,7 +22,7 @@ func NewRepository(adapter *adapters.AdapterPG) *Repository {
 }
 
 func (r *Repository) ListArticles(ctx context.Context) ([]*domain.Article, error) {
-	q := `SELECT (id, title, media_url, body, author_id) FROM feed.article`
+	q := `SELECT (id, title, media_url, body, author_id) FROM article`
 
 	rows, err := r.PG.Query(ctx, q)
 	if err != nil {
@@ -50,7 +50,7 @@ func (r *Repository) ListArticles(ctx context.Context) ([]*domain.Article, error
 }
 
 func (r *Repository) GetUserArticles(ctx context.Context, authorID domain.UserID) ([]*domain.Article, error) {
-	q := `SELECT (id, title, media_url, body, author_id) FROM feed.article
+	q := `SELECT (id, title, media_url, body, author_id) FROM article
 	WHERE author_id = $1`
 
 	rows, err := r.PG.Query(ctx, q, authorID)
