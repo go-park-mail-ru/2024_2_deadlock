@@ -1,9 +1,8 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
-CREATE SCHEMA IF NOT EXISTS auth;
 
-CREATE TABLE IF NOT EXISTS auth.user (
+CREATE TABLE IF NOT EXISTS account (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     email TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL
@@ -12,7 +11,6 @@ CREATE TABLE IF NOT EXISTS auth.user (
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE IF EXISTS auth.user;
-DROP SCHEMA IF EXISTS auth;
+DROP TABLE IF EXISTS account;
 DROP EXTENSION IF EXISTS pgcrypto;
 -- +goose StatementEnd
