@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS article (
     media_url TEXT,
     body TEXT NOT NULL
 );
+
 -- +goose StatementEnd
 
 -- +goose Down

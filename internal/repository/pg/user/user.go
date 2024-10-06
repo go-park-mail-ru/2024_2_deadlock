@@ -25,13 +25,14 @@ func NewRepository(adapter *adapters.AdapterPG) *Repository {
 	}
 }
 
-func (r *Repository) Create(ctx context.Context, input *domain.UserInput) (*domain.User, error) {
-	q := `INSERT INTO auth.user (email, password) 
-		VALUES ($1, crypt($2, gen_salt('bf'))) 
-		RETURNING (id, email)`
+func (r *Repository) Create(ctx context.Context, input *domain.UserInputRegister) (*domain.User, error) {
+	q := `INSERT INTO account (email, password, first_name, last_name, registration_date) 
+		VALUES ($1, crypt($2, gen_salt('bf')), $3, $4, CURRENT_DATE) 
+		RETURNING (id, email, avatar_url, first_name, last_name)`
 
 	var user domain.User
-	err := r.PG.QueryRow(ctx, q, input.Email, input.Password).Scan(&user)
+	err := r.PG.QueryRow(ctx, q, input.Email, input.Password,
+		input.FirstName, input.LastName).Scan(&user)
 
 	if pgutils.IsAlreadyExistsError(err) {
 		return nil, interr.NewAlreadyExistsError("user Repository.Create pg.QueryRow")
@@ -44,8 +45,8 @@ func (r *Repository) Create(ctx context.Context, input *domain.UserInput) (*doma
 	return &user, nil
 }
 
-func (r *Repository) Get(ctx context.Context, input *domain.UserInput) (*domain.User, error) {
-	q := `SELECT (id, email) FROM auth.user  
+func (r *Repository) Get(ctx context.Context, input *domain.UserInputLogin) (*domain.User, error) {
+	q := `SELECT (id, email, avatar_url, first_name, last_name) FROM account 
 		WHERE email = $1 AND password = crypt($2, password)`
 
 	user := new(domain.User)
@@ -63,7 +64,7 @@ func (r *Repository) Get(ctx context.Context, input *domain.UserInput) (*domain.
 }
 
 func (r *Repository) GetByID(ctx context.Context, userID domain.UserID) (*domain.User, error) {
-	q := `SELECT (id, email) FROM auth.user WHERE id = $1`
+	q := `SELECT (id, email, avatar_url, first_name, last_name) FROM account WHERE id = $1`
 
 	user := new(domain.User)
 	err := r.PG.QueryRow(ctx, q, userID).Scan(&user)
@@ -77,4 +78,66 @@ func (r *Repository) GetByID(ctx context.Context, userID domain.UserID) (*domain
 	}
 
 	return user, nil
+}
+
+func (r *Repository) GetUserInfo(ctx context.Context, userID domain.UserID) (*domain.UserInfo, error) {
+	q := `SELECT (registration_date, extra_info, num_subscribers, num_subscriptions, 
+	avatar_url, first_name, last_name) 
+	FROM account WHERE id = $1`
+
+	info := new(domain.UserInfo)
+	err := r.PG.QueryRow(ctx, q, userID).Scan(&info)
+
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, interr.NewNotFoundError("user Repository.GetUserInfo pg.QueryRow")
+	}
+
+	if err != nil {
+		return nil, interr.NewInternalError(err, "user Repository.GetUserInfo pg.QueryRow")
+	}
+
+	return info, nil
+}
+
+func (r *Repository) UpdateUserInfo(ctx context.Context, updateData *domain.UserUpdate, userID domain.UserID) error {
+	q := `UPDATE account SET email=$1, num_subscribers=$2,
+	 num_subscriptions=$3, extra_info=$4, avatar_url=$5, first_name=$6, last_name=$7
+	 WHERE id=$8
+	 RETURNING (email,  extra_info,  num_subscribers, num_subscriptions);`
+
+	update := new(domain.UserUpdate)
+
+	err := r.PG.QueryRow(ctx, q, updateData.Email,
+		updateData.SubscribersNum, updateData.SubscriptionsNum,
+		updateData.ExtraInfo, updateData.AvatarURL, updateData.FirstName,
+		updateData.LastName, userID).Scan(&update)
+
+	if errors.Is(err, pgx.ErrNoRows) {
+		return interr.NewNotFoundError("user Repository.UpdateUserInfo pg.QueryRow")
+	}
+
+	if err != nil {
+		return interr.NewInternalError(err, "user Repository.UpdateUserInfo pg.QueryRow")
+	}
+
+	return nil
+}
+
+func (r *Repository) UpdatePassword(ctx context.Context, updateData *domain.PasswordUpdate, userID domain.UserID) error {
+	q := `UPDATE account SET password=crypt($1, gen_salt('bf')) WHERE id=$2
+	 RETURNING (length(password));`
+
+	var passwordLength int
+
+	err := r.PG.QueryRow(ctx, q, updateData.Password, userID).Scan(&passwordLength)
+
+	if errors.Is(err, pgx.ErrNoRows) {
+		return interr.NewNotFoundError("user Repository.UpdatePassword pg.QueryRow")
+	}
+
+	if err != nil {
+		return interr.NewInternalError(err, "user Repository.UpdatePassword pg.QueryRow")
+	}
+
+	return nil
 }

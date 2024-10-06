@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS account (
     email TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL
 );
+
 -- +goose StatementEnd
 
 -- +goose Down

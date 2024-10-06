@@ -7,4 +7,5 @@ type Article struct {
 	Title    string    `json:"title"`
 	MediaURL *string   `json:"media-url"`
 	Body     string    `json:"body"`
+	AuthorID UserID    `json:"author-id"`
 }

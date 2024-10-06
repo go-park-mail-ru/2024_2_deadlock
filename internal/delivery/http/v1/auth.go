@@ -14,16 +14,16 @@ import (
 )
 
 type AuthUC interface {
-	Login(ctx context.Context, user *domain.UserInput) (domain.SessionID, error)
+	Login(ctx context.Context, user *domain.UserInputLogin) (domain.SessionID, error)
 	Logout(ctx context.Context, sessionID domain.SessionID) error
-	Register(ctx context.Context, user *domain.UserInput) (domain.SessionID, error)
+	Register(ctx context.Context, user *domain.UserInputRegister) (domain.SessionID, error)
 	GetUserID(ctx context.Context, sessionID domain.SessionID) (domain.UserID, error)
 }
 
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
-	input := new(domain.UserInput)
+	input := new(domain.UserInputLogin)
 
 	err := utils.DecodeBody(r, input)
 	if err != nil {
@@ -91,7 +91,7 @@ func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
-	input := new(domain.UserInput)
+	input := new(domain.UserInputRegister)
 
 	err := utils.DecodeBody(r, input)
 	if err != nil {
