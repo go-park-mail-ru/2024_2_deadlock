@@ -31,4 +31,8 @@ type UserUpdate struct {
 	SubscriptionsNum int     `json:"num-subscriptions" validate:"required,gte=0"`
 }
 
+type PasswordUpdate struct {
+	Password string `json:"password" validate:"required,regexp=/^[a-zA-Z0-9?!_\\-*$]{6,255}$/"`
+}
+
 type SessionID string

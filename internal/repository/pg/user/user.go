@@ -118,3 +118,22 @@ func (r *Repository) UpdateUserInfo(ctx context.Context, updateData *domain.User
 
 	return nil
 }
+
+func (r *Repository) UpdatePassword(ctx context.Context, updateData *domain.PasswordUpdate, userID domain.UserID) error {
+	q := `UPDATE account SET password=crypt($1, gen_salt('bf')) WHERE id=$2
+	 RETURNING (length(password));`
+
+	var passwordLength int
+
+	err := r.PG.QueryRow(ctx, q, updateData.Password, userID).Scan(&passwordLength)
+
+	if errors.Is(err, pgx.ErrNoRows) {
+		return interr.NewNotFoundError("user Repository.UpdatePassword pg.QueryRow")
+	}
+
+	if err != nil {
+		return interr.NewInternalError(err, "user Repository.UpdatePassword pg.QueryRow")
+	}
+
+	return nil
+}

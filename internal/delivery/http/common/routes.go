@@ -32,4 +32,6 @@ func (s *Server) makeRoutes() {
 
 	v1.HandleFunc("/users/{userID:[0-9]+}", hV1.GetUserInfo).Methods(http.MethodGet)
 	v1.HandleFunc("/users/{userID:[0-9]+}", hV1.UpdateUserInfo).Methods(http.MethodPut)
+
+	v1.HandleFunc("/users/{userID:[0-9]+}/changepassword", hV1.UpdatePassword).Methods(http.MethodPut)
 }

@@ -11,6 +11,7 @@ type Repository interface {
 	GetByID(ctx context.Context, user domain.UserID) (*domain.User, error)
 	GetUserInfo(ctx context.Context, user domain.UserID) (*domain.UserInfo, error)
 	UpdateUserInfo(ctx context.Context, userInfo *domain.UserUpdate, userID domain.UserID) error
+	UpdatePassword(ctx context.Context, password *domain.PasswordUpdate, userID domain.UserID) error
 }
 
 type Repositories struct {
@@ -38,4 +39,8 @@ func (uc *Usecase) GetUserInfo(ctx context.Context, userID domain.UserID) (*doma
 
 func (uc *Usecase) UpdateUserInfo(ctx context.Context, updateData *domain.UserUpdate, userID domain.UserID) error {
 	return uc.repo.User.UpdateUserInfo(ctx, updateData, userID)
+}
+
+func (uc *Usecase) UpdatePassword(ctx context.Context, updateData *domain.PasswordUpdate, userID domain.UserID) error {
+	return uc.repo.User.UpdatePassword(ctx, updateData, userID)
 }
