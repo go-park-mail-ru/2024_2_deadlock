@@ -88,6 +88,7 @@ func (h *Handler) UpdateUserInfo(w http.ResponseWriter, r *http.Request) {
 	userIDInput := domain.UserID(userIDInt)
 	if userID != userIDInput {
 		utils.SendError(h.log, w, resterr.NewForbiddenError("no rights to change this user"))
+		return
 	}
 
 	updateData := new(domain.UserUpdate)

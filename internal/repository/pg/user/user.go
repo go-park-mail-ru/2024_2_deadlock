@@ -109,11 +109,11 @@ func (r *Repository) UpdateUserInfo(ctx context.Context, updateData *domain.User
 		updateData.ExtraInfo, userID).Scan(&update)
 
 	if errors.Is(err, pgx.ErrNoRows) {
-		return interr.NewNotFoundError("user Repository.GetUserInfo pg.QueryRow")
+		return interr.NewNotFoundError("user Repository.UpdateUserInfo pg.QueryRow")
 	}
 
 	if err != nil {
-		return interr.NewInternalError(err, "user Repository.GetUserInfo pg.QueryRow")
+		return interr.NewInternalError(err, "user Repository.UpdateUserInfo pg.QueryRow")
 	}
 
 	return nil
