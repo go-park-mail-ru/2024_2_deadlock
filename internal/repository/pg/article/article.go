@@ -55,7 +55,7 @@ func (r *Repository) GetUserArticles(ctx context.Context, authorID domain.UserID
 
 	rows, err := r.PG.Query(ctx, q, authorID)
 	if err != nil {
-		return nil, interr.NewNotFoundError("user Repository.Get pg.Query")
+		return nil, interr.NewNotFoundError("article Repository.GetUserArticles pg.Query")
 	}
 
 	var rowSlice []*domain.Article
@@ -65,14 +65,14 @@ func (r *Repository) GetUserArticles(ctx context.Context, authorID domain.UserID
 
 		err := rows.Scan(&a)
 		if err != nil {
-			return nil, interr.NewNotFoundError("user Repository.Get rows.Scan")
+			return nil, interr.NewNotFoundError("article Repository.GetUserArticles rows.Scan")
 		}
 
 		rowSlice = append(rowSlice, a)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, interr.NewNotFoundError("user Repository.Get rows.Err")
+		return nil, interr.NewNotFoundError("article Repository.GetUserArticles rows.Err")
 	}
 
 	return rowSlice, nil

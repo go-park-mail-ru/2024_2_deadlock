@@ -26,7 +26,7 @@ func NewRepository(adapter *adapters.AdapterPG) *Repository {
 }
 
 func (r *Repository) Create(ctx context.Context, input *domain.UserInput) (*domain.User, error) {
-	q := `INSERT INTO auth.user (email, password) 
+	q := `INSERT INTO account (email, password) 
 		VALUES ($1, crypt($2, gen_salt('bf'))) 
 		RETURNING (id, email)`
 
@@ -45,7 +45,7 @@ func (r *Repository) Create(ctx context.Context, input *domain.UserInput) (*doma
 }
 
 func (r *Repository) Get(ctx context.Context, input *domain.UserInput) (*domain.User, error) {
-	q := `SELECT (id, email) FROM auth.user  
+	q := `SELECT (id, email) FROM account 
 		WHERE email = $1 AND password = crypt($2, password)`
 
 	user := new(domain.User)
@@ -63,7 +63,7 @@ func (r *Repository) Get(ctx context.Context, input *domain.UserInput) (*domain.
 }
 
 func (r *Repository) GetByID(ctx context.Context, userID domain.UserID) (*domain.User, error) {
-	q := `SELECT (id, email) FROM auth.user WHERE id = $1`
+	q := `SELECT (id, email) FROM account WHERE id = $1`
 
 	user := new(domain.User)
 	err := r.PG.QueryRow(ctx, q, userID).Scan(&user)
@@ -77,4 +77,44 @@ func (r *Repository) GetByID(ctx context.Context, userID domain.UserID) (*domain
 	}
 
 	return user, nil
+}
+
+func (r *Repository) GetUserInfo(ctx context.Context, userID domain.UserID) (*domain.UserInfo, error) {
+	q := `SELECT (num_subscribers, num_subscriptions, registration_date, extra_info) 
+	FROM account WHERE id = $1`
+
+	info := new(domain.UserInfo)
+	err := r.PG.QueryRow(ctx, q, userID).Scan(&info)
+
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, interr.NewNotFoundError("user Repository.GetUserInfo pg.QueryRow")
+	}
+
+	if err != nil {
+		return nil, interr.NewInternalError(err, "user Repository.GetUserInfo pg.QueryRow")
+	}
+
+	return info, nil
+}
+
+func (r *Repository) UpdateUserInfo(ctx context.Context, updateData *domain.UserUpdate, userID domain.UserID) error {
+	q := `UPDATE account SET email=$1, num_subscribers=$2,
+	 num_subscriptions=$3, extra_info=$4 WHERE id=$5
+	 RETURNING (email,  extra_info,  num_subscribers, num_subscriptions);`
+
+	update := new(domain.UserUpdate)
+
+	err := r.PG.QueryRow(ctx, q, updateData.Email,
+		updateData.SubscribersNum, updateData.SubscriptionsNum,
+		updateData.ExtraInfo, userID).Scan(&update)
+
+	if errors.Is(err, pgx.ErrNoRows) {
+		return interr.NewNotFoundError("user Repository.GetUserInfo pg.QueryRow")
+	}
+
+	if err != nil {
+		return interr.NewInternalError(err, "user Repository.GetUserInfo pg.QueryRow")
+	}
+
+	return nil
 }
