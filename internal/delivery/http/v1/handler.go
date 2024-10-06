@@ -7,8 +7,9 @@ import (
 )
 
 type UseCases struct {
-	Auth AuthUC
-	User UserUC
+	Auth    AuthUC
+	User    UserUC
+	Article ArticleUC
 }
 
 type Handler struct {
