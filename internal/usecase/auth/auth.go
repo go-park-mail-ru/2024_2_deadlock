@@ -14,8 +14,8 @@ type SessionRepository interface {
 }
 
 type UserRepository interface {
-	Get(ctx context.Context, user *domain.UserInput) (*domain.User, error)
-	Create(ctx context.Context, user *domain.UserInput) (*domain.User, error)
+	Get(ctx context.Context, user *domain.UserInputLogin) (*domain.User, error)
+	Create(ctx context.Context, user *domain.UserInputRegister) (*domain.User, error)
 }
 
 type Repositories struct {
@@ -34,7 +34,7 @@ func NewUsecase(repo Repositories) *Usecase {
 	}
 }
 
-func (uc *Usecase) Login(ctx context.Context, user *domain.UserInput) (domain.SessionID, error) {
+func (uc *Usecase) Login(ctx context.Context, user *domain.UserInputLogin) (domain.SessionID, error) {
 	u, err := uc.repo.User.Get(ctx, user)
 	if err != nil {
 		return "", err
@@ -47,7 +47,7 @@ func (uc *Usecase) Logout(ctx context.Context, sessionID domain.SessionID) error
 	return uc.repo.Session.Delete(ctx, sessionID)
 }
 
-func (uc *Usecase) Register(ctx context.Context, user *domain.UserInput) (domain.SessionID, error) {
+func (uc *Usecase) Register(ctx context.Context, user *domain.UserInputRegister) (domain.SessionID, error) {
 	u, err := uc.repo.User.Create(ctx, user)
 	if err != nil {
 		return "", err
