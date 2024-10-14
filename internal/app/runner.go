@@ -2,11 +2,11 @@ package app
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"os/signal"
 	"syscall"
 
-	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 
@@ -27,7 +27,7 @@ func Run(ctx context.Context, e Entrypoint) error {
 
 	logger, err := dg.GetLogger()
 	if err != nil {
-		return errors.Wrap(err, "get logger")
+		return fmt.Errorf("app.Run dg.GetLogger: %w", err)
 	}
 
 	if err := e.Init(ctx); err != nil {

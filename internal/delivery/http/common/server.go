@@ -44,7 +44,7 @@ func (s *Server) Run() error {
 	s.log.Infof("http server started on port %d", s.cfg.Server.Port)
 
 	if err := s.http.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
-		return errors.Wrap(err, "http server listen and serve")
+		return fmt.Errorf("Server.Run http.ListenAndServe: %w", err)
 	}
 
 	return nil
@@ -55,7 +55,7 @@ func (s *Server) Close() error {
 		err := s.http.Close()
 		if err != nil {
 			s.log.Errorf("could not stop http server: %v", err)
-			return errors.Wrap(err, "http server close")
+			return fmt.Errorf("Server.Close http.Close: %w", err)
 		}
 
 		s.log.Info("http server stopped")

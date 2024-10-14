@@ -2,8 +2,8 @@ package app
 
 import (
 	"context"
+	"fmt"
 
-	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/adapters"
@@ -27,13 +27,13 @@ func (e *APIEntrypoint) Init(ctx context.Context) error {
 
 	logger, err := dg.GetLogger()
 	if err != nil {
-		return errors.Wrap(err, "get logger")
+		return fmt.Errorf("APIEntrypoint.Init dg.GetLogger: %w", err)
 	}
 
 	pgAdapter := adapters.NewAdapterPG(e.Config)
 	if err := pgAdapter.Init(ctx); err != nil {
 		logger.Errorw("init pg adapter error", zap.Error(err))
-		return errors.Wrap(err, "init pg adapter")
+		return fmt.Errorf("APIEntrypoint.Init pgAdapter.Init: %w", err)
 	}
 
 	userRepo := pguser.NewRepository(pgAdapter)
