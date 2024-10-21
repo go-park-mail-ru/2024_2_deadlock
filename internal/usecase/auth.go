@@ -59,6 +59,6 @@ func (uc *AuthUsecase) GetUserID(ctx context.Context, sessionID domain.SessionID
 	return uc.repo.Session.GetUserID(ctx, sessionID)
 }
 
-func (uc *AuthUsecase) CurrentUser(ctx context.Context, userID domain.UserID) (*domain.User, error) {
+func (uc *AuthUsecase) GetCurrentUser(ctx context.Context, userID domain.UserID) (*domain.User, error) {
 	return uc.repo.Auth.GetUserByID(ctx, userID)
 }

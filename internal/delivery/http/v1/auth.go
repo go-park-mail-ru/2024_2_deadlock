@@ -18,7 +18,7 @@ type AuthUC interface {
 	Logout(ctx context.Context, sessionID domain.SessionID) error
 	Register(ctx context.Context, user *domain.UserInput) (domain.SessionID, error)
 	GetUserID(ctx context.Context, sessionID domain.SessionID) (domain.UserID, error)
-	CurrentUser(ctx context.Context, userID domain.UserID) (*domain.User, error)
+	GetCurrentUser(ctx context.Context, userID domain.UserID) (*domain.User, error)
 }
 
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
@@ -133,7 +133,7 @@ func (h *Handler) CurrentUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := h.UC.Auth.CurrentUser(r.Context(), userID)
+	user, err := h.UC.Auth.GetCurrentUser(r.Context(), userID)
 
 	if errors.Is(err, interr.ErrNotFound) {
 		h.log.Errorw("current user not found", zap.Error(err))
