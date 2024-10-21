@@ -18,6 +18,7 @@ type AuthUC interface {
 	Logout(ctx context.Context, sessionID domain.SessionID) error
 	Register(ctx context.Context, user *domain.UserInput) (domain.SessionID, error)
 	GetUserID(ctx context.Context, sessionID domain.SessionID) (domain.UserID, error)
+	CurrentUser(ctx context.Context, userID domain.UserID) (*domain.User, error)
 }
 
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
@@ -60,8 +61,6 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
 		utils.SendError(h.log, w, resterr.NewUnauthorizedError("unauthorized, please login"))
@@ -125,4 +124,28 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 
 	http.SetCookie(w, cookie)
 	utils.SendBody(h.log, w, struct{}{})
+}
+
+func (h *Handler) CurrentUser(w http.ResponseWriter, r *http.Request) {
+	userID := utils.GetCtxUserID(r.Context())
+	if userID == 0 {
+		utils.SendError(h.log, w, resterr.NewUnauthorizedError("unauthorized, please login"))
+		return
+	}
+
+	user, err := h.UC.Auth.CurrentUser(r.Context(), userID)
+
+	if errors.Is(err, interr.ErrNotFound) {
+		h.log.Errorw("current user not found", zap.Error(err))
+		utils.SendError(h.log, w, resterr.NewNotFoundError("user not found"))
+
+		return
+	}
+
+	if err != nil {
+		utils.ProcessInternalServerError(h.log, w, err)
+		return
+	}
+
+	utils.SendBody(h.log, w, user)
 }

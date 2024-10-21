@@ -11,10 +11,9 @@ import (
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/delivery/http/common"
 	v1 "github.com/go-park-mail-ru/2024_2_deadlock/internal/delivery/http/v1"
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/depgraph"
-	"github.com/go-park-mail-ru/2024_2_deadlock/internal/repository/local/session"
-	pguser "github.com/go-park-mail-ru/2024_2_deadlock/internal/repository/pg/user"
-	"github.com/go-park-mail-ru/2024_2_deadlock/internal/usecase/auth"
-	"github.com/go-park-mail-ru/2024_2_deadlock/internal/usecase/user"
+	"github.com/go-park-mail-ru/2024_2_deadlock/internal/repository/local"
+	"github.com/go-park-mail-ru/2024_2_deadlock/internal/repository/pg"
+	"github.com/go-park-mail-ru/2024_2_deadlock/internal/usecase"
 )
 
 type APIEntrypoint struct {
@@ -36,19 +35,15 @@ func (e *APIEntrypoint) Init(ctx context.Context) error {
 		return fmt.Errorf("APIEntrypoint.Init pgAdapter.Init: %w", err)
 	}
 
-	userRepo := pguser.NewRepository(pgAdapter)
-	sessionRepo := session.NewStorage()
+	authRepo := pg.NewAuthRepository(pgAdapter)
+	sessionRepo := local.NewSessionRepository()
 
-	authUC := auth.NewUsecase(auth.Repositories{
+	authUC := usecase.NewAuthUsecase(usecase.AuthRepositories{
+		Auth:    authRepo,
 		Session: sessionRepo,
-		User:    userRepo,
-	})
-	userUC := user.NewUsecase(user.Repositories{
-		User: userRepo,
 	})
 
 	ucs := v1.UseCases{
-		User: userUC,
 		Auth: authUC,
 	}
 
