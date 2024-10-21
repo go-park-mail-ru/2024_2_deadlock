@@ -18,13 +18,14 @@ func AuthMW(log *zap.SugaredLogger, cfg *bootstrap.Config, auth v1.AuthUC) func(
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			_, err := r.Cookie(cfg.Server.Session.Cookie.Name)
 
-			if err != nil && !errors.Is(err, http.ErrNoCookie) {
-				log.Errorw("could not get cookie", zap.Error(err))
-				utils.ProcessBadRequestError(log, w, err)
-			}
-
 			if errors.Is(err, http.ErrNoCookie) {
 				next.ServeHTTP(w, r)
+				return
+			}
+
+			if err != nil {
+				log.Errorw("could not get cookie", zap.Error(err))
+				utils.ProcessBadRequestError(log, w, err)
 				return
 			}
 
