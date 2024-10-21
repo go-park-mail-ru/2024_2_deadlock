@@ -24,13 +24,21 @@ func AuthMW(log *zap.SugaredLogger, cfg *bootstrap.Config, auth v1.AuthUC) func(
 			}
 
 			if err != nil {
-				log.Errorw("could not get cookie", zap.Error(err))
+				log.Errorw("auth mw r.Cookie get", zap.Error(err))
 				utils.ProcessBadRequestError(log, w, err)
+
 				return
 			}
 
 			id, err := auth.GetUserID(r.Context(), utils.GetCookieSessionID(cfg, r))
 			if errors.Is(err, resterr.ErrNotFound) {
+				return
+			}
+
+			if err != nil {
+				log.Errorw("auth mw auth.GetUserID", zap.Error(err))
+				utils.ProcessBadRequestError(log, w, err)
+
 				return
 			}
 
