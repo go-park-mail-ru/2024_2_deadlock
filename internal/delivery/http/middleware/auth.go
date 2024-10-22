@@ -30,7 +30,7 @@ func AuthMW(log *zap.SugaredLogger, cfg *bootstrap.Config, auth v1.AuthUC) func(
 				return
 			}
 
-			id, err := auth.GetUserID(r.Context(), utils.GetCookieSessionID(cfg, r))
+			id, err := auth.GetUserID(r.Context(), utils.GetCookieSessionID(r, cfg))
 			if errors.Is(err, resterr.ErrNotFound) {
 				return
 			}
