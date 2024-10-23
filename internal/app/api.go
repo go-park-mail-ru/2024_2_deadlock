@@ -48,7 +48,7 @@ func (e *APIEntrypoint) Init(ctx context.Context) error {
 	})
 
 	ucs := v1.UseCases{
-		Auth: authUC,
+		Auth:    authUC,
 		Article: articleUC,
 	}
 
