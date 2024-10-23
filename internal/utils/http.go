@@ -40,7 +40,7 @@ func SendError(log *zap.SugaredLogger, w http.ResponseWriter, restErr resterr.Re
 
 func ProcessBadRequestError(log *zap.SugaredLogger, w http.ResponseWriter, err error) {
 	restErr := resterr.NewBadRequestError(err)
-	log.Errorw("could not decode user input", zap.Error(restErr))
+	log.Errorw("bad request", zap.Error(restErr))
 	SendError(log, w, restErr)
 }
 

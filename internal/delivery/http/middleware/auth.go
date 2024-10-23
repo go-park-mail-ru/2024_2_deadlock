@@ -10,7 +10,7 @@ import (
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/bootstrap"
 	v1 "github.com/go-park-mail-ru/2024_2_deadlock/internal/delivery/http/v1"
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/utils"
-	"github.com/go-park-mail-ru/2024_2_deadlock/pkg/resterr"
+	"github.com/go-park-mail-ru/2024_2_deadlock/pkg/interr"
 )
 
 func AuthMW(log *zap.SugaredLogger, cfg *bootstrap.Config, auth v1.AuthUC) func(http.Handler) http.Handler {
@@ -25,19 +25,22 @@ func AuthMW(log *zap.SugaredLogger, cfg *bootstrap.Config, auth v1.AuthUC) func(
 
 			if err != nil {
 				log.Errorw("auth mw r.Cookie get", zap.Error(err))
-				utils.ProcessBadRequestError(log, w, err)
+				next.ServeHTTP(w, r)
 
 				return
 			}
 
 			id, err := auth.GetUserID(r.Context(), utils.GetCookieSessionID(r, cfg))
-			if errors.Is(err, resterr.ErrNotFound) {
+			if errors.Is(err, interr.ErrNotFound) {
+				log.Warnw("auth mw auth.GetUserID user not found", zap.Error(err))
+				next.ServeHTTP(w, r)
+
 				return
 			}
 
 			if err != nil {
 				log.Errorw("auth mw auth.GetUserID", zap.Error(err))
-				utils.ProcessBadRequestError(log, w, err)
+				next.ServeHTTP(w, r)
 
 				return
 			}
