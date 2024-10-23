@@ -13,10 +13,13 @@ func IsAlreadyExistsError(err error) bool {
 	return errors.As(err, &pgErr) && pgErr.Code == "23505"
 }
 
-func CancelTxOnErr(ctx context.Context, tx pgx.Tx, err error) {
+func CancelTxOnErr(ctx context.Context, tx pgx.Tx, err error) error {
+	var pgErr error
 	if err != nil {
-		_ = tx.Rollback(ctx)
+		pgErr = tx.Rollback(ctx)
 	} else {
-		_ = tx.Commit(ctx)
+		pgErr = tx.Commit(ctx)
 	}
+
+	return pgErr
 }
