@@ -7,7 +7,7 @@ import (
 )
 
 type UseCases struct {
-	Auth AuthUC
+	Auth    AuthUC
 	Article ArticleUC
 }
 
