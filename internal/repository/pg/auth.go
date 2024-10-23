@@ -27,9 +27,9 @@ func (r *AuthRepository) CreateUser(ctx context.Context, input *domain.UserInput
 		VALUES ($1, crypt($2, gen_salt('bf'))) 
 		RETURNING (id, email)`
 
-	var user domain.User
-	err := r.PG.QueryRow(ctx, q, input.Email, input.Password).Scan(&user)
+	user := new(domain.User)
 
+	err := r.PG.QueryRow(ctx, q, input.Email, input.Password).Scan(&user)
 	if pgutils.IsAlreadyExistsError(err) {
 		return nil, interr.NewAlreadyExistsError("user AuthRepository.CreateUser pg.QueryRow")
 	}
@@ -38,7 +38,7 @@ func (r *AuthRepository) CreateUser(ctx context.Context, input *domain.UserInput
 		return nil, interr.NewInternalError(err, "user AuthRepository.CreateUser pg.QueryRow")
 	}
 
-	return &user, nil
+	return user, nil
 }
 
 func (r *AuthRepository) GetUser(ctx context.Context, input *domain.UserInput) (*domain.User, error) {
@@ -46,8 +46,8 @@ func (r *AuthRepository) GetUser(ctx context.Context, input *domain.UserInput) (
 		WHERE email = $1 AND password = crypt($2, password)`
 
 	user := new(domain.User)
-	err := r.PG.QueryRow(ctx, q, input.Email, input.Password).Scan(&user)
 
+	err := r.PG.QueryRow(ctx, q, input.Email, input.Password).Scan(&user)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, interr.NewNotFoundError("user AuthRepository.GetUser pg.QueryRow")
 	}
@@ -63,8 +63,8 @@ func (r *AuthRepository) GetUserByID(ctx context.Context, userID domain.UserID) 
 	q := `SELECT (id, email) FROM auth.user WHERE id = $1`
 
 	user := new(domain.User)
-	err := r.PG.QueryRow(ctx, q, userID).Scan(&user)
 
+	err := r.PG.QueryRow(ctx, q, userID).Scan(&user)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, interr.NewNotFoundError("user AuthRepository.GetUserByID pg.QueryRow")
 	}
