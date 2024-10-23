@@ -19,15 +19,15 @@ func NewSessionRepository() *SessionRepository {
 }
 
 func (r *SessionRepository) CreateSession(ctx context.Context, userID domain.UserID) (domain.SessionID, error) {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-
 	randS, err := rand.String(64)
 	if err != nil {
 		return "", interr.NewInternalError(err, "session SessionRepository.CreateUser rand.String")
 	}
 
 	sid := domain.SessionID(randS)
+
+	r.mu.Lock()
+	defer r.mu.Unlock()
 	r.sessions[sid] = userID
 
 	return sid, nil
