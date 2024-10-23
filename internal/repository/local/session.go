@@ -9,6 +9,8 @@ import (
 	"github.com/go-park-mail-ru/2024_2_deadlock/pkg/rand"
 )
 
+const SessionIDLength = 64
+
 type SessionRepository struct {
 	mu       sync.RWMutex
 	sessions map[domain.SessionID]domain.UserID
@@ -19,7 +21,7 @@ func NewSessionRepository() *SessionRepository {
 }
 
 func (r *SessionRepository) CreateSession(ctx context.Context, userID domain.UserID) (domain.SessionID, error) {
-	randS, err := rand.String(64)
+	randS, err := rand.String(SessionIDLength)
 	if err != nil {
 		return "", interr.NewInternalError(err, "session SessionRepository.CreateUser rand.String")
 	}
