@@ -23,7 +23,7 @@ func (r *ArticleRepository) ListArticles(ctx context.Context) ([]*domain.Article
 
 	rows, err := r.PG.Query(ctx, q)
 	if err != nil {
-		return nil, interr.NewNotFoundError("article ArticleRepository.Get pg.Query")
+		return nil, interr.NewInternalError(err, "article ArticleRepository.Get pg.Query")
 	}
 
 	var rowSlice []*domain.Article
@@ -31,16 +31,15 @@ func (r *ArticleRepository) ListArticles(ctx context.Context) ([]*domain.Article
 	for rows.Next() {
 		a := new(domain.Article)
 
-		err := rows.Scan(&a)
-		if err != nil {
-			return nil, interr.NewNotFoundError("article ArticleRepository.Get rows.Scan")
+		if err := rows.Scan(&a); err != nil {
+			return nil, interr.NewInternalError(err, "article ArticleRepository.Get rows.Scan")
 		}
 
 		rowSlice = append(rowSlice, a)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, interr.NewNotFoundError("article ArticleRepository.Get rows.Err")
+		return nil, interr.NewInternalError(err, "article ArticleRepository.Get rows.Err")
 	}
 
 	return rowSlice, nil
