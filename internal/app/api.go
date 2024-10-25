@@ -11,11 +11,13 @@ import (
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/delivery/http/common"
 	v1 "github.com/go-park-mail-ru/2024_2_deadlock/internal/delivery/http/v1"
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/depgraph"
+	imagerepo "github.com/go-park-mail-ru/2024_2_deadlock/internal/repository/image"
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/repository/local/session"
 	pgarticle "github.com/go-park-mail-ru/2024_2_deadlock/internal/repository/pg/article"
 	pguser "github.com/go-park-mail-ru/2024_2_deadlock/internal/repository/pg/user"
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/usecase/article"
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/usecase/auth"
+	"github.com/go-park-mail-ru/2024_2_deadlock/internal/usecase/avatar"
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/usecase/user"
 )
 
@@ -38,9 +40,21 @@ func (e *APIEntrypoint) Init(ctx context.Context) error {
 		return errors.Wrap(err, "init pg adapter")
 	}
 
+	minioAdapter := adapters.NewMinioAdapter(e.Config)
+	if err := minioAdapter.Init(); err != nil {
+		logger.Errorw("init minio adapter error", zap.Error(err))
+		return errors.Wrap(err, "init minio adapter")
+	}
+
 	userRepo := pguser.NewRepository(pgAdapter)
 	sessionRepo := session.NewStorage()
 	articleRepo := pgarticle.NewRepository(pgAdapter)
+	avatarRepo := imagerepo.NewRepository(minioAdapter)
+
+	if err := avatarRepo.Init(ctx, "avatarbucket"); err != nil {
+		logger.Errorw("init avatar repo error", zap.Error(err))
+		return errors.Wrap(err, "init avatar repo")
+	}
 
 	authUC := auth.NewUsecase(auth.Repositories{
 		Session: sessionRepo,
@@ -52,11 +66,16 @@ func (e *APIEntrypoint) Init(ctx context.Context) error {
 	articleUC := article.NewUsecase(article.Repositories{
 		Article: articleRepo,
 	})
+	avatarUC := avatar.NewUsecase(avatar.Repositories{
+		ImageRepo: avatarRepo,
+		UserRepo:  userRepo,
+	})
 
 	ucs := v1.UseCases{
 		User:    userUC,
 		Auth:    authUC,
 		Article: articleUC,
+		Avatar:  avatarUC,
 	}
 
 	handlerV1 := v1.NewHandler(e.Config, logger, ucs)

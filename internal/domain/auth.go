@@ -1,6 +1,8 @@
 package domain
 
-import "time"
+import (
+	"time"
+)
 
 type UserInputRegister struct {
 	Email     string `json:"email" validate:"required,email"`
@@ -17,11 +19,11 @@ type UserInputLogin struct {
 type UserID int
 
 type User struct {
-	ID        UserID  `json:"id"`
-	Email     string  `json:"email"`
-	AvatarURL *string `json:"avatar-url"`
-	FirstName string  `json:"first-name"`
-	LastName  string  `json:"last-name"`
+	ID        UserID   `json:"id"`
+	Email     string   `json:"email"`
+	AvatarID  *ImageID `json:"avatar-id"`
+	FirstName string   `json:"first-name"`
+	LastName  string   `json:"last-name"`
 }
 
 type UserInfo struct {
@@ -29,19 +31,19 @@ type UserInfo struct {
 	ExtraInfo        *string   `json:"extra-info"`
 	SubscribersNum   int       `json:"num-subscribers"`
 	SubscriptionsNum int       `json:"num-subscriptions"`
-	AvatarURL        *string   `json:"avatar-url"`
+	AvatarID         *ImageID  `json:"avatar-id"`
 	FirstName        string    `json:"first-name"`
 	LastName         string    `json:"last-name"`
 }
 
 type UserUpdate struct {
-	Email            string  `json:"email" validate:"required,email"`
-	ExtraInfo        *string `json:"extra-info" validate:"omitempty"`
-	SubscribersNum   int     `json:"num-subscribers" validate:"required,gte=0"`
-	SubscriptionsNum int     `json:"num-subscriptions" validate:"required,gte=0"`
-	AvatarURL        *string `json:"avatar-url" validate:"required"`
-	FirstName        string  `json:"first-name" validate:"required,max=50"`
-	LastName         string  `json:"last-name" validate:"required,max=50"`
+	Email            string   `json:"email" validate:"required,email"`
+	ExtraInfo        *string  `json:"extra-info" validate:"omitempty"`
+	SubscribersNum   int      `json:"num-subscribers" validate:"required,gte=0"`
+	SubscriptionsNum int      `json:"num-subscriptions" validate:"required,gte=0"`
+	AvatarID         *ImageID `json:"avatar-id" validate:"required"`
+	FirstName        string   `json:"first-name" validate:"required,max=50"`
+	LastName         string   `json:"last-name" validate:"required,max=50"`
 }
 
 type PasswordUpdate struct {
