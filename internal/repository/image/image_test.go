@@ -19,7 +19,7 @@ package image
 
 // func TestOK(t *testing.T) {
 // 	t.Log("YES")
-// 	absPath, _ := filepath.Abs("../../../../dev.yaml")
+// 	absPath, _ := filepath.Abs("../../../dev.yaml")
 // 	cfg, err := bootstrap.Setup(absPath)
 // 	if err != nil {
 // 		t.Errorf("error reading config")

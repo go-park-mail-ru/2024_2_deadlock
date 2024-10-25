@@ -39,5 +39,4 @@ func (s *Server) makeRoutes() {
 	v1.HandleFunc("/users/{userID:[0-9]+}/avatar", hV1.GetAvatarImage).Methods(http.MethodGet)
 	v1.HandleFunc("/users/{userID:[0-9]+}/avatar", hV1.UpdateAvatarImage).Methods(http.MethodPut)
 	v1.HandleFunc("/users/{userID:[0-9]+}/avatar", hV1.DeleteAvatarImage).Methods(http.MethodDelete)
-
 }
