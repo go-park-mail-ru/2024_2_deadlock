@@ -1,9 +1,7 @@
 package image
 
 import (
-	"bytes"
 	"context"
-	"encoding/base64"
 	"time"
 
 	"github.com/google/uuid"
@@ -50,15 +48,8 @@ func (r *Repository) Init(ctx context.Context, bucketName string) error {
 }
 
 func (r *Repository) PutImage(ctx context.Context, data *domain.ImageData) (*domain.ImageUploadInfo, error) {
-	image, err := base64.StdEncoding.DecodeString(data.Image)
-	if err != nil {
-		return nil, interr.NewInternalError(err, "unable to decode string from base64 format")
-	}
-
-	file := bytes.NewReader(image)
 	imageID := uuid.New().String()
-
-	_, err = r.MinioAdapter.PutObject(ctx, r.BucketName, imageID, file, int64(len(image)),
+	_, err := r.MinioAdapter.PutObject(ctx, r.BucketName, imageID, data.Image, data.Header.Size,
 		minio.PutObjectOptions{})
 	if err != nil {
 		return nil, interr.NewInternalError(err, "unable to upload photo")

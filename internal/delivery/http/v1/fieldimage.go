@@ -5,9 +5,11 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/gorilla/mux"
+	"go.uber.org/zap"
+
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/domain"
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/utils"
-	"github.com/gorilla/mux"
 )
 
 type FieldImageUC interface {
@@ -31,11 +33,15 @@ func (h *Handler) SetFieldImage(w http.ResponseWriter, r *http.Request) {
 
 	imageData := new(domain.ImageData)
 
-	err = utils.DecodeBody(r, imageData)
-	if err != nil {
-		utils.ProcessBadRequestError(h.log, w, err)
+	file, fileHeader, multipartErr := utils.DecodeImage(r, h.cfg)
+	if multipartErr != nil {
+		h.log.Errorw("problems when image decoded from multipart", zap.Error(multipartErr))
+		utils.SendError(h.log, w, multipartErr)
 		return
 	}
+
+	imageData.Image = file
+	imageData.Header = fileHeader
 
 	imageURL, err := h.UC.FieldImage.SetFieldImage(r.Context(), imageData, fieldID)
 

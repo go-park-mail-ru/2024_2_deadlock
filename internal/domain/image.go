@@ -1,7 +1,10 @@
 package domain
 
+import "mime/multipart"
+
 type ImageData struct {
-	Image string `json:"image"`
+	Image  multipart.File        `json:"image"`
+	Header *multipart.FileHeader `json:"header"`
 }
 
 type ImageUploadInfo struct {

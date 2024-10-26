@@ -40,4 +40,6 @@ func (s *Server) makeRoutes() {
 
 	v1.HandleFunc("/fields/{fieldID:[0-9]+}/image", hV1.SetFieldImage).Methods(http.MethodPost)
 	v1.HandleFunc("/fields/{fieldID:[0-9]+}/image", hV1.DeleteFieldImage).Methods(http.MethodDelete)
+
+	v1.HandleFunc("/fields/{fieldID:[0-9]+}", hV1.GetFieldInfo).Methods(http.MethodGet)
 }

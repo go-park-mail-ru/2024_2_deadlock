@@ -12,6 +12,7 @@ type UseCases struct {
 	Article    ArticleUC
 	FieldImage FieldImageUC
 	Avatar     AvatarUC
+	Field      FieldUC
 }
 
 type Handler struct {
