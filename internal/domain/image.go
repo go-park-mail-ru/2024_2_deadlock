@@ -12,3 +12,5 @@ type ImageUploadInfo struct {
 type ImageID string
 
 type ImageURL string
+
+type FieldID int

@@ -31,7 +31,7 @@ type UserInfo struct {
 	ExtraInfo        *string   `json:"extra-info"`
 	SubscribersNum   int       `json:"num-subscribers"`
 	SubscriptionsNum int       `json:"num-subscriptions"`
-	AvatarID         *ImageID  `json:"avatar-id"`
+	AvatarURL        *ImageURL `json:"avatar-url"`
 	FirstName        string    `json:"first-name"`
 	LastName         string    `json:"last-name"`
 }
@@ -41,7 +41,7 @@ type UserUpdate struct {
 	ExtraInfo        *string  `json:"extra-info" validate:"omitempty"`
 	SubscribersNum   int      `json:"num-subscribers" validate:"required,gte=0"`
 	SubscriptionsNum int      `json:"num-subscriptions" validate:"required,gte=0"`
-	AvatarID         *ImageID `json:"avatar-id" validate:"required"`
+	AvatarID         *ImageID `json:"avatar-id" validate:"omitempty"`
 	FirstName        string   `json:"first-name" validate:"required,max=50"`
 	LastName         string   `json:"last-name" validate:"required,max=50"`
 }

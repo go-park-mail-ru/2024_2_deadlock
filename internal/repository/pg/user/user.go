@@ -81,23 +81,27 @@ func (r *Repository) GetByID(ctx context.Context, userID domain.UserID) (*domain
 	return user, nil
 }
 
-func (r *Repository) GetUserInfo(ctx context.Context, userID domain.UserID) (*domain.UserInfo, error) {
-	q := `SELECT (registration_date, extra_info, num_subscribers, num_subscriptions, 
-	avatar_id, first_name, last_name) 
+func (r *Repository) GetUserInfo(ctx context.Context, userID domain.UserID) (*domain.UserInfo, *domain.ImageID, error) {
+	q := `SELECT registration_date, extra_info, num_subscribers, num_subscriptions, 
+	avatar_id, first_name, last_name 
 	FROM account WHERE id = $1`
 
 	info := new(domain.UserInfo)
-	err := r.PG.QueryRow(ctx, q, userID).Scan(&info)
+
+	var avatarID *domain.ImageID
+
+	err := r.PG.QueryRow(ctx, q, userID).Scan(&info.RegistrationDate, &info.ExtraInfo,
+		&info.SubscribersNum, &info.SubscriptionsNum, &avatarID, &info.FirstName, &info.LastName)
 
 	if errors.Is(err, pgx.ErrNoRows) {
-		return nil, interr.NewNotFoundError("user Repository.GetUserInfo pg.QueryRow")
+		return nil, nil, interr.NewNotFoundError("user Repository.GetUserInfo pg.QueryRow")
 	}
 
 	if err != nil {
-		return nil, interr.NewInternalError(err, "user Repository.GetUserInfo pg.QueryRow")
+		return nil, nil, interr.NewInternalError(err, "user Repository.GetUserInfo pg.QueryRow")
 	}
 
-	return info, nil
+	return info, avatarID, nil
 }
 
 func (r *Repository) UpdateUserInfo(ctx context.Context, updateData *domain.UserUpdate, userID domain.UserID) error {
@@ -150,18 +154,18 @@ func (r *Repository) GetUserAvatarID(ctx context.Context, userID domain.UserID) 
 	q := `SELECT (avatar_id) from account WHERE id=$1;`
 	row := r.PG.QueryRow(ctx, q, userID)
 
-	var avatarID domain.ImageID
+	var avatarID *domain.ImageID
 	err := row.Scan(&avatarID)
 
 	if errors.Is(err, pgx.ErrNoRows) {
-		return nil, nil
+		return nil, interr.NewNotFoundError("user Repository.GetUserAvatarID pg.QueryRow")
 	}
 
 	if err != nil {
-		return nil, interr.NewInternalError(err, "user Repository.UpdatePassword pg.QueryRow")
+		return nil, interr.NewInternalError(err, "user Repository.GetUserAvatarID pg.QueryRow")
 	}
 
-	return &avatarID, nil
+	return avatarID, nil
 }
 
 func (r *Repository) UpdatePassword(ctx context.Context, updateData *domain.PasswordUpdate, userID domain.UserID) error {

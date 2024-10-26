@@ -11,8 +11,6 @@ import (
 
 type AvatarUC interface {
 	SetAvatarImage(ctx context.Context, data *domain.ImageData, userID domain.UserID) (domain.ImageURL, error)
-	GetAvatarImage(ctx context.Context, userID domain.UserID) (domain.ImageURL, error)
-	UpdateAvatarImage(ctx context.Context, data *domain.ImageData, userID domain.UserID) (domain.ImageURL, error)
 	DeleteAvatarImage(ctx context.Context, userID domain.UserID) error
 }
 
@@ -34,52 +32,6 @@ func (h *Handler) SetAvatarImage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	imageURL, err := h.UC.Avatar.SetAvatarImage(r.Context(), imageData, userID)
-
-	if err != nil {
-		utils.ProcessInternalServerError(h.log, w, err)
-		return
-	}
-
-	utils.SendBody(h.log, w, imageURL)
-}
-
-func (h *Handler) UpdateAvatarImage(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-
-	userID := utils.GetCtxUserID(r.Context())
-	if userID == 0 {
-		utils.SendError(h.log, w, resterr.NewUnauthorizedError("unauthorized, please login"))
-		return
-	}
-
-	imageData := new(domain.ImageData)
-
-	err := utils.DecodeBody(r, imageData)
-	if err != nil {
-		utils.ProcessBadRequestError(h.log, w, err)
-		return
-	}
-
-	imageURL, err := h.UC.Avatar.UpdateAvatarImage(r.Context(), imageData, userID)
-
-	if err != nil {
-		utils.ProcessInternalServerError(h.log, w, err)
-		return
-	}
-
-	utils.SendBody(h.log, w, imageURL)
-}
-
-func (h *Handler) GetAvatarImage(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-
-	userID := utils.GetCtxUserID(r.Context())
-	if userID == 0 {
-		utils.SendError(h.log, w, resterr.NewUnauthorizedError("unauthorized, please login"))
-		return
-	}
-
-	imageURL, err := h.UC.Avatar.GetAvatarImage(r.Context(), userID)
 
 	if err != nil {
 		utils.ProcessInternalServerError(h.log, w, err)

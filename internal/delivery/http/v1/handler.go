@@ -7,11 +7,11 @@ import (
 )
 
 type UseCases struct {
-	Auth    AuthUC
-	User    UserUC
-	Article ArticleUC
-	Image   ImageUC
-	Avatar  AvatarUC
+	Auth       AuthUC
+	User       UserUC
+	Article    ArticleUC
+	FieldImage FieldImageUC
+	Avatar     AvatarUC
 }
 
 type Handler struct {

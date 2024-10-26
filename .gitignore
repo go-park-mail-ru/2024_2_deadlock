@@ -24,3 +24,9 @@ go.work
 *.env
 dev.yaml
 prod.yaml
+
+#images
+*.jpg
+
+#testfiles
+*_test.go

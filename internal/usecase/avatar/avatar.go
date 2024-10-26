@@ -8,7 +8,6 @@ import (
 )
 
 type ImageRepository interface {
-	UpdateImage(ctx context.Context, data *domain.ImageData, imageID domain.ImageID) (domain.ImageURL, error)
 	PutImage(ctx context.Context, data *domain.ImageData) (*domain.ImageUploadInfo, error)
 	GetImage(ctx context.Context, imageID domain.ImageID) (domain.ImageURL, error)
 	DeleteImage(ctx context.Context, imageID domain.ImageID) error
@@ -42,45 +41,9 @@ func (uc *Usecase) SetAvatarImage(ctx context.Context, data *domain.ImageData, u
 		return "", err
 	}
 
-	imageURL, imageID := imageUploadInfo.URL, imageUploadInfo.ID
+	imageURL, avatarID := imageUploadInfo.URL, imageUploadInfo.ID
 
-	err = uc.repo.UserRepo.UpdateUserAvatarID(ctx, imageID, userID)
-	if err != nil {
-		return "", err
-	}
-
-	return imageURL, nil
-}
-
-func (uc *Usecase) GetAvatarImage(ctx context.Context, userID domain.UserID) (domain.ImageURL, error) {
-	imageID, err := uc.repo.UserRepo.GetUserAvatarID(ctx, userID)
-	if err != nil {
-		return "", err
-	}
-
-	if imageID == nil {
-		return "", nil
-	}
-
-	imageURL, err := uc.repo.ImageRepo.GetImage(ctx, *imageID)
-	if err != nil {
-		return "", err
-	}
-
-	return imageURL, nil
-}
-
-func (uc *Usecase) UpdateAvatarImage(ctx context.Context, data *domain.ImageData, userID domain.UserID) (domain.ImageURL, error) {
-	imageID, err := uc.repo.UserRepo.GetUserAvatarID(ctx, userID)
-	if err != nil {
-		return "", err
-	}
-
-	if imageID == nil {
-		return "", nil
-	}
-
-	imageURL, err := uc.repo.ImageRepo.UpdateImage(ctx, data, *imageID)
+	err = uc.repo.UserRepo.UpdateUserAvatarID(ctx, avatarID, userID)
 	if err != nil {
 		return "", err
 	}
@@ -105,15 +68,3 @@ func (uc *Usecase) DeleteAvatarImage(ctx context.Context, userID domain.UserID) 
 
 	return uc.repo.UserRepo.ClearUserAvatarID(ctx, userID)
 }
-
-// func (uc *Usecase) AvatarImageExists(ctx context.Context, userID domain.UserID) (bool, error) {
-// 	imageID, err := uc.repo.UserRepo.GetUserAvatarID(ctx, userID)
-// 	if err != nil {
-// 		return false, err
-// 	}
-
-// 	if imageID == nil {
-// 		return false, nil
-// 	}
-// 	return true, nil
-// }

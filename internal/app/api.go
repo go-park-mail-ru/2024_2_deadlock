@@ -18,6 +18,7 @@ import (
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/usecase/article"
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/usecase/auth"
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/usecase/avatar"
+	"github.com/go-park-mail-ru/2024_2_deadlock/internal/usecase/fieldimage"
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/usecase/user"
 )
 
@@ -50,10 +51,16 @@ func (e *APIEntrypoint) Init(ctx context.Context) error {
 	sessionRepo := session.NewStorage()
 	articleRepo := pgarticle.NewRepository(pgAdapter)
 	avatarRepo := imagerepo.NewRepository(minioAdapter)
+	fieldImageRepo := imagerepo.NewRepository(minioAdapter)
 
-	if err := avatarRepo.Init(ctx, "avatarbucket"); err != nil {
+	if err := avatarRepo.Init(ctx, "avatar_bucket"); err != nil {
 		logger.Errorw("init avatar repo error", zap.Error(err))
 		return errors.Wrap(err, "init avatar repo")
+	}
+
+	if err := fieldImageRepo.Init(ctx, "field_image_bucket"); err != nil {
+		logger.Errorw("init fieldImage repo error", zap.Error(err))
+		return errors.Wrap(err, "init fieldImage repo")
 	}
 
 	authUC := auth.NewUsecase(auth.Repositories{
@@ -61,7 +68,8 @@ func (e *APIEntrypoint) Init(ctx context.Context) error {
 		User:    userRepo,
 	})
 	userUC := user.NewUsecase(user.Repositories{
-		User: userRepo,
+		User:  userRepo,
+		Image: avatarRepo,
 	})
 	articleUC := article.NewUsecase(article.Repositories{
 		Article: articleRepo,
@@ -70,12 +78,17 @@ func (e *APIEntrypoint) Init(ctx context.Context) error {
 		ImageRepo: avatarRepo,
 		UserRepo:  userRepo,
 	})
+	fieldImageUC := fieldimage.NewUsecase(fieldimage.Repositories{
+		ImageRepo: fieldImageRepo,
+		// FieldRepo: fieldRepo,
+	})
 
 	ucs := v1.UseCases{
-		User:    userUC,
-		Auth:    authUC,
-		Article: articleUC,
-		Avatar:  avatarUC,
+		User:       userUC,
+		Auth:       authUC,
+		Article:    articleUC,
+		Avatar:     avatarUC,
+		FieldImage: fieldImageUC,
 	}
 
 	handlerV1 := v1.NewHandler(e.Config, logger, ucs)

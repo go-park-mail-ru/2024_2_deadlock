@@ -76,39 +76,6 @@ func (r *Repository) PutImage(ctx context.Context, data *domain.ImageData) (*dom
 	return imageUploadInfo, nil
 }
 
-func (r *Repository) UpdateImage(ctx context.Context, data *domain.ImageData, imageID domain.ImageID) (domain.ImageURL, error) {
-	_, err := r.MinioAdapter.StatObject(ctx, r.BucketName, string(imageID), minio.StatObjectOptions{})
-	if err != nil {
-		if minio.ToErrorResponse(err).Code == "NoSuchKey" {
-			return "", interr.NewNotFoundError("current imageID does not exist")
-		} else {
-			return "", interr.NewInternalError(err, "error while viewing image by imageID")
-		}
-	}
-
-	image, err := base64.StdEncoding.DecodeString(data.Image)
-	if err != nil {
-		return "", interr.NewInternalError(err, "unable to decode string from base64 format")
-	}
-
-	file := bytes.NewReader(image)
-
-	_, err = r.MinioAdapter.PutObject(ctx, r.BucketName, string(imageID), file, int64(len(image)),
-		minio.PutObjectOptions{})
-	if err != nil {
-		return "", interr.NewInternalError(err, "unable to upload photo")
-	}
-
-	url, err := r.MinioAdapter.PresignedGetObject(ctx, r.BucketName, string(imageID), time.Second*60*60*24, nil)
-	if err != nil {
-		return "", interr.NewInternalError(err, "unable to get url of uploaded photo")
-	}
-
-	imageURL := domain.ImageURL(url.String())
-
-	return imageURL, nil
-}
-
 func (r *Repository) GetImage(ctx context.Context, imageID domain.ImageID) (domain.ImageURL, error) {
 	_, err := r.MinioAdapter.StatObject(ctx, r.BucketName, string(imageID), minio.StatObjectOptions{})
 	if err != nil {
