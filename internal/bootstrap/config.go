@@ -24,6 +24,10 @@ type Server struct {
 	CorsAllowOrigins []string `mapstructure:"cors_allow_origins"`
 }
 
+type Server struct {
+	Port int `mapstructure:"port"`
+}
+
 type Database struct {
 	URL string `mapstructure:"url"`
 }
