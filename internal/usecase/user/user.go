@@ -9,13 +9,18 @@ import (
 
 type Repository interface {
 	GetByID(ctx context.Context, user domain.UserID) (*domain.User, error)
-	GetUserInfo(ctx context.Context, user domain.UserID) (*domain.UserInfo, error)
+	GetUserInfo(ctx context.Context, user domain.UserID) (*domain.UserInfo, *domain.ImageID, error)
 	UpdateUserInfo(ctx context.Context, userInfo *domain.UserUpdate, userID domain.UserID) error
 	UpdatePassword(ctx context.Context, password *domain.PasswordUpdate, userID domain.UserID) error
 }
 
+type ImageRepository interface {
+	GetImage(ctx context.Context, imageID domain.ImageID) (domain.ImageURL, error)
+}
+
 type Repositories struct {
-	User Repository
+	User  Repository
+	Image ImageRepository
 }
 
 type Usecase struct {
@@ -34,7 +39,24 @@ func (uc *Usecase) CurrentUser(ctx context.Context, userID domain.UserID) (*doma
 }
 
 func (uc *Usecase) GetUserInfo(ctx context.Context, userID domain.UserID) (*domain.UserInfo, error) {
-	return uc.repo.User.GetUserInfo(ctx, userID)
+	userInfo, avatarID, err := uc.repo.User.GetUserInfo(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	if avatarID == nil {
+		return userInfo, nil
+	}
+
+	url, err := uc.repo.Image.GetImage(ctx, *avatarID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	userInfo.AvatarURL = &url
+
+	return userInfo, nil
 }
 
 func (uc *Usecase) UpdateUserInfo(ctx context.Context, updateData *domain.UserUpdate, userID domain.UserID) error {

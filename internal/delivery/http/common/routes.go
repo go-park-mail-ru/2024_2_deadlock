@@ -34,4 +34,12 @@ func (s *Server) makeRoutes() {
 	v1.HandleFunc("/users/{userID:[0-9]+}", hV1.UpdateUserInfo).Methods(http.MethodPut)
 
 	v1.HandleFunc("/users/{userID:[0-9]+}/changepassword", hV1.UpdatePassword).Methods(http.MethodPut)
+
+	v1.HandleFunc("/users/{userID:[0-9]+}/avatar", hV1.SetAvatarImage).Methods(http.MethodPost)
+	v1.HandleFunc("/users/{userID:[0-9]+}/avatar", hV1.DeleteAvatarImage).Methods(http.MethodDelete)
+
+	v1.HandleFunc("/fields/{fieldID:[0-9]+}/image", hV1.SetFieldImage).Methods(http.MethodPost)
+	v1.HandleFunc("/fields/{fieldID:[0-9]+}/image", hV1.DeleteFieldImage).Methods(http.MethodDelete)
+
+	v1.HandleFunc("/fields/{fieldID:[0-9]+}", hV1.GetFieldInfo).Methods(http.MethodGet)
 }

@@ -28,9 +28,21 @@ type Database struct {
 	URL string `mapstructure:"url"`
 }
 
+type Minio struct {
+	Endpoint string `mapstructure:"endpoint"`
+	User     string `mapstructure:"user"`
+	Password string `mapstructure:"password"`
+}
+
+type ImageCfg struct {
+	ValidTypes []string `mapstructure:"valid_types"`
+}
+
 type Config struct {
 	Server   Server   `mapstructure:"server"`
 	Database Database `mapstructure:"database"`
+	Minio    Minio    `mapstructure:"minio"`
+	Image    ImageCfg `mapstructure:"image"`
 }
 
 func Setup(cfgPath string) (*Config, error) {
