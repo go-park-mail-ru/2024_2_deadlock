@@ -1,0 +1,3 @@
+package constants
+
+const LettersAndNumbers = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
