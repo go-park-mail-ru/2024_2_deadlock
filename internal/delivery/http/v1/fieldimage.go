@@ -37,6 +37,7 @@ func (h *Handler) SetFieldImage(w http.ResponseWriter, r *http.Request) {
 	if multipartErr != nil {
 		h.log.Errorw("problems when image decoded from multipart", zap.Error(multipartErr))
 		utils.SendError(h.log, w, multipartErr)
+
 		return
 	}
 
@@ -47,6 +48,7 @@ func (h *Handler) SetFieldImage(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		utils.ProcessInternalServerError(h.log, w, err)
+
 		return
 	}
 

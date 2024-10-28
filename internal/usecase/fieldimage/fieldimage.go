@@ -36,6 +36,18 @@ func NewUsecase(repo Repositories) *Usecase {
 }
 
 func (uc *Usecase) SetFieldImage(ctx context.Context, data *domain.ImageData, fieldID domain.FieldID) (domain.ImageURL, error) {
+	curImageID, err := uc.repo.FieldRepo.GetFieldImageID(ctx, fieldID)
+	if err != nil {
+		return "", err
+	}
+
+	if curImageID != nil {
+		err := uc.repo.ImageRepo.DeleteImage(ctx, *curImageID)
+		if err != nil {
+			return "", err
+		}
+	}
+
 	imageUploadInfo, err := uc.repo.ImageRepo.PutImage(ctx, data)
 	if err != nil {
 		return "", err

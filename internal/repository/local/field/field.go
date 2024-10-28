@@ -11,6 +11,9 @@ import (
 var GlobFields = map[domain.FieldID]*domain.ImageID{
 	1: nil,
 	2: nil,
+	3: nil,
+	4: nil,
+	5: nil,
 }
 
 type Repository struct {

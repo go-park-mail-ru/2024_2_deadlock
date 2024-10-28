@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"mime/multipart"
 	"net/http"
 
@@ -11,6 +12,7 @@ import (
 func DecodeImage(r *http.Request, cfg *bootstrap.Config) (multipart.File, *multipart.FileHeader, resterr.RestErr) {
 	err := r.ParseMultipartForm(10 << 20)
 	if err != nil {
+		fmt.Println(err)
 		return nil, nil, resterr.NewBadRequestError("multipart form is not valid")
 	}
 

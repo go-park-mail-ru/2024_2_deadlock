@@ -36,6 +36,18 @@ func NewUsecase(repo Repositories) *Usecase {
 }
 
 func (uc *Usecase) SetAvatarImage(ctx context.Context, data *domain.ImageData, userID domain.UserID) (domain.ImageURL, error) {
+	curAvatarID, err := uc.repo.UserRepo.GetUserAvatarID(ctx, userID)
+	if err != nil {
+		return "", err
+	}
+
+	if curAvatarID != nil {
+		err := uc.repo.ImageRepo.DeleteImage(ctx, *curAvatarID)
+		if err != nil {
+			return "", err
+		}
+	}
+
 	imageUploadInfo, err := uc.repo.ImageRepo.PutImage(ctx, data)
 	if err != nil {
 		return "", err

@@ -4,10 +4,11 @@ import (
 	"context"
 	"net/http"
 
+	"go.uber.org/zap"
+
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/domain"
 	"github.com/go-park-mail-ru/2024_2_deadlock/internal/utils"
 	"github.com/go-park-mail-ru/2024_2_deadlock/pkg/resterr"
-	"go.uber.org/zap"
 )
 
 type AvatarUC interface {
@@ -30,16 +31,19 @@ func (h *Handler) SetAvatarImage(w http.ResponseWriter, r *http.Request) {
 	if multipartErr != nil {
 		h.log.Errorw("problems when image decoded from multipart", zap.Error(multipartErr))
 		utils.SendError(h.log, w, multipartErr)
+
 		return
 	}
 
 	imageData.Image = file
+
 	imageData.Header = fileHeader
 
 	imageURL, err := h.UC.Avatar.SetAvatarImage(r.Context(), imageData, userID)
 
 	if err != nil {
 		utils.ProcessInternalServerError(h.log, w, err)
+
 		return
 	}
 

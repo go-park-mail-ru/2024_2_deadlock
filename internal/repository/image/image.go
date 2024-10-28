@@ -51,6 +51,7 @@ func (r *Repository) PutImage(ctx context.Context, data *domain.ImageData) (*dom
 	imageID := uuid.New().String()
 	_, err := r.MinioAdapter.PutObject(ctx, r.BucketName, imageID, data.Image, data.Header.Size,
 		minio.PutObjectOptions{})
+
 	if err != nil {
 		return nil, interr.NewInternalError(err, "unable to upload photo")
 	}
